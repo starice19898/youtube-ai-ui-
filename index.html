@@ -1024,6 +1024,108 @@
     color: #666;
   }
 
+  /* MIXED FEED (s2a) */
+  .mixed-feed {
+    padding: 8px 14px 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .shorts-row {
+    display: flex;
+    gap: 8px;
+  }
+
+  .shorts-card {
+    flex: 1;
+    cursor: pointer;
+  }
+
+  .shorts-thumb {
+    width: 100%;
+    aspect-ratio: 9 / 16;
+    border-radius: 10px;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 6px;
+  }
+
+  .shorts-badge {
+    position: absolute;
+    bottom: 7px;
+    left: 7px;
+    background: rgba(0,0,0,0.65);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 4px;
+    letter-spacing: 0.2px;
+  }
+
+  .shorts-title {
+    font-size: 12px;
+    font-weight: 500;
+    color: #000;
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin-bottom: 2px;
+  }
+
+  .shorts-channel {
+    font-size: 11px;
+    color: #666;
+  }
+
+  .regular-card {
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .regular-thumb {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border-radius: 10px;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 7px;
+  }
+
+  .regular-duration {
+    position: absolute;
+    bottom: 6px;
+    right: 7px;
+    background: rgba(0,0,0,0.75);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 5px;
+    border-radius: 3px;
+  }
+
+  .regular-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #000;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin-bottom: 3px;
+  }
+
+  .regular-channel {
+    font-size: 12px;
+    color: #666;
+  }
+
   /* SEARCH BAR WITH X */
   .search-bar-input {
     flex: 1;
@@ -1276,12 +1378,12 @@
   /* Side action icons on video */
   .video-side-actions {
     position: absolute;
-    right: 8px;
-    bottom: 44px;
+    right: 12px;
+    bottom: 60px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 18px;
+    gap: 20px;
   }
   .side-action {
     display: flex;
@@ -1315,7 +1417,7 @@
   .more-section.open { display: block; }
   .more-btn-row {
     display: flex;
-    justify-content: flex-end;
+    justify-content: flex-start;
     padding: 6px 14px 4px;
   }
   .more-toggle-btn {
@@ -1507,56 +1609,55 @@
       <span style="font-size:16px;font-weight:700;color:#000;flex:1;">부산 vs. 제주도 여행 비교</span>
     </div>
 
-    <div class="scroll-area">
-      <!-- 1:1 Video Area -->
-      <div style="position:relative;width:calc(100% - 28px);aspect-ratio:1/1;margin:0 14px;background:linear-gradient(160deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);border-radius:14px;overflow:hidden;flex-shrink:0;">
-        <!-- Subtitle bar at bottom -->
-        <div class="video-subtitle">🎬 제주 다람쥐 쇼쿠지</div>
-        <!-- Side action icons -->
-        <div class="video-side-actions">
-          <div class="side-action" onclick="showToast('공유 기능')">
-            <span class="side-action-icon">📤</span>
-            <span class="side-action-label">공유</span>
-          </div>
-          <div class="side-action" onclick="showToast('저장됨')">
-            <span class="side-action-icon">💾</span>
-            <span class="side-action-label">저장</span>
-          </div>
-          <div class="side-action" onclick="goTo('s-search')">
-            <span class="side-action-icon">🔍</span>
-            <span class="side-action-label">재검색</span>
-          </div>
-          <div class="side-action" onclick="goTo('s6')">
-            <span class="side-action-icon" style="font-size:22px;font-weight:700;">⋮</span>
-            <span class="side-action-label">더보기</span>
-          </div>
+    <!-- Full-screen video fills all space between header and bottom-nav -->
+    <div style="flex:1;position:relative;background:linear-gradient(160deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);overflow:hidden;">
+
+      <!-- Subtitle bar -->
+      <div class="video-subtitle" style="bottom:52px;">🎬 제주 다람쥐 쇼쿠지</div>
+
+      <!-- Channel profile overlay – bottom left -->
+      <div style="position:absolute;bottom:12px;left:12px;display:flex;align-items:center;gap:8px;z-index:2;">
+        <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#1565C0,#42a5f5);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;border:2px solid rgba(255,255,255,0.6);flex-shrink:0;">유</div>
+        <div>
+          <div style="font-size:13px;font-weight:700;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,0.8);">유정 ✓ <span style="font-size:11px;font-weight:400;opacity:0.8;">(외 2채널 참여)</span></div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.75);text-shadow:0 1px 3px rgba(0,0,0,0.7);">구독자 120만명</div>
         </div>
       </div>
 
-      <!-- Player card (channel info) -->
-      <div class="player-card">
-        <div class="player-card-avatar">유</div>
-        <div class="player-card-info">
-          <div class="player-card-name">유정 ✓ <span style="font-size:12px;font-weight:400;color:#888;">(외 2채널 참여)</span></div>
-          <div class="player-card-subs">구독자 120만명</div>
+      <!-- Side action icons – bottom right -->
+      <div class="video-side-actions">
+        <div class="side-action" onclick="showToast('공유 기능')">
+          <span class="side-action-icon">📤</span>
+          <span class="side-action-label">공유</span>
+        </div>
+        <div class="side-action" onclick="showToast('저장됨')">
+          <span class="side-action-icon">💾</span>
+          <span class="side-action-label">저장</span>
+        </div>
+        <div class="side-action" onclick="goTo('s-search')">
+          <span class="side-action-icon">🔍</span>
+          <span class="side-action-label">재검색</span>
+        </div>
+        <div class="side-action" onclick="goTo('s6')">
+          <span class="side-action-icon" style="font-size:22px;font-weight:700;">⋮</span>
+          <span class="side-action-label">더보기</span>
         </div>
       </div>
 
-      <!-- Chapter progress bar -->
-      <div class="progress-area">
-        <div class="progress-bar">
-          <div class="progress-fill"></div>
-          <div class="progress-dot" style="left:0%"></div>
-          <div class="progress-dot" style="left:45%"></div>
-          <div class="progress-dot" style="left:80%"></div>
-        </div>
-        <div class="progress-time">
-          <span>0:42</span>
-          <span>2:18</span>
-        </div>
-      </div>
+    </div>
 
-      <div style="height:10px;"></div>
+    <!-- Progress bar between video and bottom-nav -->
+    <div class="progress-area" style="background:#fff;padding:8px 14px 6px;">
+      <div class="progress-bar">
+        <div class="progress-fill"></div>
+        <div class="progress-dot" style="left:0%"></div>
+        <div class="progress-dot" style="left:45%"></div>
+        <div class="progress-dot" style="left:80%"></div>
+      </div>
+      <div class="progress-time">
+        <span>0:42</span>
+        <span>2:18</span>
+      </div>
     </div>
 
     <div class="bottom-nav">
@@ -1596,7 +1697,7 @@
         <div class="source-brand-icon">
           <svg viewBox="0 0 24 24" fill="white" width="14" height="14"><polygon points="5,3 19,12 5,21"/></svg>
         </div>
-        <span style="font-size:14px;font-weight:700;">AI shorts Highlight BETA</span>
+        <span style="font-size:14px;font-weight:700;">AI Shorts Highlight BETA</span>
       </div>
       <div class="header-icon">
         <svg class="icon-svg" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
@@ -1820,6 +1921,12 @@
 
     <div class="scroll-area">
 
+      <!-- AI Shorts label -->
+      <div style="padding:10px 14px 2px;display:flex;align-items:center;gap:6px;">
+        <span style="background:#ff0000;color:#fff;font-size:11px;font-weight:700;padding:2px 8px;border-radius:4px;letter-spacing:0.3px;">AI Shorts</span>
+        <span style="font-size:13px;color:#444;font-weight:500;">검색어 기반 자동 편집 영상</span>
+      </div>
+
       <!-- AI Summary Video Section -->
       <div class="ai-video-area">
         <div class="ai-video-inner">
@@ -1867,40 +1974,69 @@
         </div>
       </div>
 
-      <!-- 2x2 Video Grid -->
-      <div class="video-grid">
-        <!-- Card 1 -->
-        <div class="grid-card">
-          <div class="grid-thumb orange">
-            <div class="thumb-overlay"><span style="color:rgba(255,255,255,0.85);font-size:10px;text-align:center;padding:4px;">제주 맛집</span></div>
+      <!-- Mixed Shorts + Regular Feed -->
+      <div class="mixed-feed">
+
+        <!-- Row 1: Two Shorts side by side -->
+        <div class="shorts-row">
+          <div class="shorts-card">
+            <div class="shorts-thumb orange">
+              <div class="thumb-overlay"><span style="color:#fff;font-size:18px;">🍊</span></div>
+              <div class="shorts-badge">Shorts</div>
+            </div>
+            <div class="shorts-title">제주 흑돼지 맛집 솔직 후기 (현지인 픽)</div>
+            <div class="shorts-channel">ootb STUDIO</div>
           </div>
-          <div class="grid-title">제주도민 추천 찐 맛집 ※메모 필수※</div>
-          <div class="grid-channel">ootb STUDIO</div>
-        </div>
-        <!-- Card 2 -->
-        <div class="grid-card">
-          <div class="grid-thumb teal">
-            <div class="thumb-overlay"><span style="color:rgba(255,255,255,0.85);font-size:10px;text-align:center;padding:4px;">제주 맛집</span></div>
+          <div class="shorts-card">
+            <div class="shorts-thumb teal">
+              <div class="thumb-overlay"><span style="color:#fff;font-size:18px;">🌊</span></div>
+              <div class="shorts-badge">Shorts</div>
+            </div>
+            <div class="shorts-title">제주 뷰 맛집 TOP3 30초 요약</div>
+            <div class="shorts-channel">오밍스</div>
           </div>
-          <div class="grid-title">제주도민 추천 찐 맛집 ※메모 필수※</div>
-          <div class="grid-channel">오밍스</div>
         </div>
-        <!-- Card 3 -->
-        <div class="grid-card">
-          <div class="grid-thumb palm">
-            <div class="thumb-overlay"><span style="color:rgba(255,255,255,0.85);font-size:10px;text-align:center;padding:4px;">맛집 코스</span></div>
+
+        <!-- Row 2: Regular video (full-width) -->
+        <div class="regular-card">
+          <div class="regular-thumb palm">
+            <div class="thumb-overlay"><span style="color:#fff;font-size:20px;">🌴</span></div>
+            <div class="regular-duration">18:29</div>
           </div>
-          <div class="grid-title">제주도맛집 필수 코스 top4</div>
-          <div class="grid-channel">서이두</div>
+          <div class="regular-title">제주도민이 추천하는 찐 맛집 코스 (성산·서귀포 편)</div>
+          <div class="regular-channel">서이두 · 조회수 241만 · 2일 전</div>
         </div>
-        <!-- Card 4 -->
-        <div class="grid-card">
-          <div class="grid-thumb food">
-            <div class="thumb-overlay"><span style="color:rgba(255,255,255,0.85);font-size:10px;text-align:center;padding:4px;">동쪽 맛집</span></div>
+
+        <!-- Row 3: Two more Shorts -->
+        <div class="shorts-row">
+          <div class="shorts-card">
+            <div class="shorts-thumb food">
+              <div class="thumb-overlay"><span style="color:#fff;font-size:18px;">🍜</span></div>
+              <div class="shorts-badge">Shorts</div>
+            </div>
+            <div class="shorts-title">제주 숨은 국수 맛집 발굴</div>
+            <div class="shorts-channel">현주zip</div>
           </div>
-          <div class="grid-title">도민도 인정한 제주 동쪽 맛집 top4 #제주맛집추천</div>
-          <div class="grid-channel">현주zip</div>
+          <div class="shorts-card">
+            <div class="shorts-thumb rose">
+              <div class="thumb-overlay"><span style="color:#fff;font-size:18px;">🫧</span></div>
+              <div class="shorts-badge">Shorts</div>
+            </div>
+            <div class="shorts-title">제주 카페 인생샷 명소 3곳</div>
+            <div class="shorts-channel">소희맨션</div>
+          </div>
         </div>
+
+        <!-- Row 4: Regular video (full-width) -->
+        <div class="regular-card">
+          <div class="regular-thumb blue">
+            <div class="thumb-overlay"><span style="color:#fff;font-size:20px;">✈️</span></div>
+            <div class="regular-duration">22:10</div>
+          </div>
+          <div class="regular-title">제주 여행 2박 3일 완전 정복 (맛집+숙소+코스 총정리)</div>
+          <div class="regular-channel">유정 · 조회수 87만 · 5일 전</div>
+        </div>
+
       </div>
 
       <div style="height:10px;"></div>
