@@ -133,7 +133,7 @@
     flex-shrink: 0;
   }
 
-  /* AI TOGGLE ROW */
+  /* AI TOGGLE ROW (kept in CSS for legacy, not used on s1 anymore) */
   .ai-toggle-row {
     display: flex;
     align-items: center;
@@ -454,7 +454,7 @@
     cursor: pointer;
   }
 
-  /* S3 - SEARCH SCREEN */
+  /* SEARCH SCREEN */
   .search-header {
     display: flex;
     align-items: center;
@@ -597,31 +597,7 @@
     gap: 8px;
   }
 
-  /* S4 - AI RESULTS */
-  .filter-row {
-    display: flex;
-    align-items: center;
-    padding: 8px 14px;
-    gap: 6px;
-    flex-shrink: 0;
-  }
-
-  .filter-btn {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 7px 14px;
-    border-radius: 16px;
-    border: 1px solid #ddd;
-    background: #fff;
-    font-size: 13px;
-    font-weight: 500;
-    cursor: pointer;
-    color: #333;
-  }
-
-  .filter-btn:active { background: #f5f5f5; }
-
+  /* AI VIDEO AREA (used in s2a) */
   .ai-video-area {
     margin: 6px 14px;
     background: #1a1a1a;
@@ -756,95 +732,6 @@
 
   .send-btn:active { background: #444; }
 
-  /* FILTER OVERLAY */
-  .filter-overlay {
-    position: absolute;
-    inset: 0;
-    z-index: 100;
-    display: none;
-  }
-
-  .filter-overlay.open { display: block; }
-
-  .filter-bg {
-    position: absolute;
-    inset: 0;
-    background: rgba(0,0,0,0.5);
-  }
-
-  .filter-panel {
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 280px;
-    background: #fff;
-    padding-bottom: 20px;
-    overflow-y: auto;
-    transform: translateX(-100%);
-    transition: transform 0.28s ease;
-  }
-
-  .filter-overlay.open .filter-panel {
-    transform: translateX(0);
-  }
-
-  .filter-close {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 16px 16px 12px;
-    font-size: 15px;
-    font-weight: 700;
-    cursor: pointer;
-    border-bottom: 1px solid #eee;
-  }
-
-  .filter-section-title {
-    font-size: 14px;
-    font-weight: 700;
-    padding: 14px 16px 8px;
-    color: #000;
-  }
-
-  .filter-options {
-    padding: 0 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-
-  .filter-option {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 9px 0;
-    cursor: pointer;
-    font-size: 14px;
-    color: #333;
-    border-bottom: 1px solid #f5f5f5;
-  }
-
-  .radio-dot {
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    border: 2px solid #ccc;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-  }
-
-  .radio-dot.selected { border-color: #000; }
-  .radio-dot.selected::after {
-    content: '';
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: #000;
-  }
-
   /* S5 - VIDEO PLAYER */
   .player-header {
     display: flex;
@@ -902,26 +789,6 @@
     text-shadow: 0 1px 4px rgba(0,0,0,0.6);
   }
 
-  .segment-channel {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-    font-weight: 700;
-    color: #fff;
-    cursor: pointer;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.4);
-  }
-
-  .seg-ch-blue { background: #1565C0; }
-  .seg-ch-orange { background: #e65100; }
-
   /* PROGRESS BAR */
   .progress-area {
     padding: 10px 14px;
@@ -958,22 +825,6 @@
     color: #888;
     display: flex;
     justify-content: space-between;
-  }
-
-  /* HASHTAGS */
-  .hashtags {
-    padding: 4px 14px 10px;
-    font-size: 12px;
-    color: #555;
-    line-height: 1.6;
-    flex-shrink: 0;
-  }
-
-  .hashtags .more-link {
-    font-weight: 700;
-    color: #000;
-    cursor: pointer;
-    text-decoration: underline;
   }
 
   /* S6 - SOURCE VIDEOS */
@@ -1173,6 +1024,108 @@
     color: #666;
   }
 
+  /* MIXED FEED (s2a) */
+  .mixed-feed {
+    padding: 8px 14px 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .shorts-row {
+    display: flex;
+    gap: 8px;
+  }
+
+  .shorts-card {
+    flex: 1;
+    cursor: pointer;
+  }
+
+  .shorts-thumb {
+    width: 100%;
+    aspect-ratio: 9 / 16;
+    border-radius: 10px;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 6px;
+  }
+
+  .shorts-badge {
+    position: absolute;
+    bottom: 7px;
+    left: 7px;
+    background: rgba(0,0,0,0.65);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 4px;
+    letter-spacing: 0.2px;
+  }
+
+  .shorts-title {
+    font-size: 12px;
+    font-weight: 500;
+    color: #000;
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin-bottom: 2px;
+  }
+
+  .shorts-channel {
+    font-size: 11px;
+    color: #666;
+  }
+
+  .regular-card {
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .regular-thumb {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border-radius: 10px;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 7px;
+  }
+
+  .regular-duration {
+    position: absolute;
+    bottom: 6px;
+    right: 7px;
+    background: rgba(0,0,0,0.75);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 5px;
+    border-radius: 3px;
+  }
+
+  .regular-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #000;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin-bottom: 3px;
+  }
+
+  .regular-channel {
+    font-size: 12px;
+    color: #666;
+  }
+
   /* SEARCH BAR WITH X */
   .search-bar-input {
     flex: 1;
@@ -1218,18 +1171,6 @@
     font-size: 13px;
     color: #555;
     margin-bottom: 4px;
-  }
-
-  /* SHORTS LABEL IN S4 */
-  .s4-shorts-label {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 14px 4px;
-    font-size: 13px;
-    font-weight: 600;
-    color: #000;
-    flex-shrink: 0;
   }
 
   /* Divider */
@@ -1292,7 +1233,7 @@
   .space2 { background: linear-gradient(160deg, #0c0c1d 0%, #1e3a5f 50%, #1a6b3c 100%); }
   .space3 { background: linear-gradient(160deg, #1a0533 0%, #4c1d95 50%, #dc2626 100%); }
 
-  /* Generic gradient classes (work on any element: source-thumb, grid-thumb, short-thumb) */
+  /* Generic gradient classes */
   .sunset  { background: linear-gradient(135deg, #ff6b6b 0%, #feca57 30%, #ff9ff3 60%, #ff6b9d 100%); }
   .ocean   { background: linear-gradient(135deg, #0f3460 0%, #16213e 50%, #0f3460 100%); }
   .forest  { background: linear-gradient(135deg, #134e5e 0%, #71b280 100%); }
@@ -1309,35 +1250,6 @@
   .coral   { background: linear-gradient(135deg, #ff512f 0%, #f09819 100%); }
   .mint    { background: linear-gradient(135deg, #00b09b 0%, #96c93d 100%); }
   .indigo  { background: linear-gradient(135deg, #4776e6 0%, #8e54e9 100%); }
-
-  /* AI Video loading overlay */
-  .video-loading-overlay {
-    position: absolute;
-    inset: 0;
-    background: rgba(0,0,0,0.72);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    border-radius: 14px;
-    z-index: 20;
-  }
-  .loading-spinner {
-    width: 38px;
-    height: 38px;
-    border: 3px solid rgba(255,255,255,0.2);
-    border-top-color: #fff;
-    border-radius: 50%;
-    animation: spin 0.75s linear infinite;
-    margin-bottom: 12px;
-  }
-  .loading-text {
-    color: rgba(255,255,255,0.88);
-    font-size: 12px;
-    font-weight: 500;
-    letter-spacing: 0.2px;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
 
   /* S-Search (regular search input screen) */
   .s-search-header {
@@ -1377,116 +1289,6 @@
     cursor: pointer;
     flex-shrink: 0;
   }
-
-  /* 재검색 전용 스타일 */
-  .rs-context-bar {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 16px 10px;
-    background: #fff8e8;
-    border-bottom: 1px solid #fde68a;
-    flex-shrink: 0;
-  }
-  .rs-context-icon { font-size: 14px; }
-  .rs-context-text { font-size: 12px; color: #92400e; font-weight: 500; line-height: 1.4; }
-  .rs-context-keyword {
-    display: inline-block;
-    background: #fde68a;
-    color: #78350f;
-    border-radius: 10px;
-    padding: 1px 8px;
-    font-size: 11px;
-    font-weight: 700;
-    margin-left: 2px;
-  }
-  .rs-option-group { display: flex; flex-direction: column; flex-shrink: 0; }
-  .rs-option-row {
-    display: flex;
-    align-items: flex-start;
-    padding: 10px 16px 6px;
-    gap: 6px;
-    border-bottom: 1px solid #f0f0f0;
-  }
-  .rs-option-title {
-    font-size: 12px;
-    font-weight: 700;
-    color: #444;
-    white-space: nowrap;
-    padding-top: 5px;
-    min-width: 68px;
-    flex-shrink: 0;
-  }
-  .rs-chips-wrap { display: flex; flex-wrap: wrap; gap: 6px; flex: 1; padding-bottom: 4px; }
-  .rs-chip {
-    padding: 5px 12px;
-    border-radius: 14px;
-    background: #f2f2f2;
-    font-size: 12px;
-    font-weight: 500;
-    color: #333;
-    white-space: nowrap;
-    cursor: pointer;
-    border: 1.5px solid transparent;
-    transition: background 0.15s, border-color 0.15s, color 0.15s;
-    user-select: none;
-  }
-  .rs-chip.selected { background: #ff0000; color: #fff; border-color: #ff0000; }
-  .rs-chip:active { opacity: 0.8; }
-  .rs-divider { height: 6px; background: #f6f6f6; flex-shrink: 0; }
-  .rs-free-section { padding: 12px 16px 0; flex-shrink: 0; }
-  .rs-free-label { font-size: 11px; font-weight: 700; color: #888; letter-spacing: 0.03em; margin-bottom: 8px; }
-  .rs-free-input-wrap {
-    background: #f2f2f2;
-    border-radius: 14px;
-    display: flex;
-    align-items: center;
-    padding: 11px 14px;
-    gap: 8px;
-    border: 1.5px solid transparent;
-    transition: border-color 0.2s;
-  }
-  .rs-free-input-wrap:focus-within { border-color: #ff0000; background: #fff; }
-  .rs-free-input-wrap input {
-    border: none;
-    background: transparent;
-    flex: 1;
-    font-size: 14px;
-    font-family: 'Noto Sans KR', sans-serif;
-    outline: none;
-    color: #000;
-  }
-  .rs-free-input-wrap input::placeholder { color: #aaa; }
-  .rs-free-send-btn {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    background: #ff0000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    flex-shrink: 0;
-    opacity: 0.35;
-    transition: opacity 0.15s;
-  }
-  .rs-free-send-btn.active { opacity: 1; }
-  .rs-apply-btn {
-    margin: 16px 16px 0;
-    background: #ff0000;
-    color: #fff;
-    border: none;
-    border-radius: 22px;
-    font-size: 15px;
-    font-weight: 700;
-    font-family: 'Noto Sans KR', sans-serif;
-    padding: 13px 0;
-    width: calc(100% - 32px);
-    cursor: pointer;
-    transition: opacity 0.15s;
-    flex-shrink: 0;
-  }
-  .rs-apply-btn:active { opacity: 0.8; }
 
   /* S6 interactive elements */
   .source-thumb { cursor: pointer; }
@@ -1553,12 +1355,104 @@
     height: 18px;
   }
 
+  /* Player card */
+  .player-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border-bottom: 1px solid #f0f0f0;
+    flex-shrink: 0;
+  }
+  .player-card-avatar {
+    width: 40px; height: 40px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; font-weight: 700; color: #fff;
+    background: linear-gradient(135deg, #1565C0, #42a5f5);
+    flex-shrink: 0;
+  }
+  .player-card-info { flex: 1; }
+  .player-card-name { font-size: 14px; font-weight: 700; color: #000; }
+  .player-card-subs { font-size: 12px; color: #666; margin-top: 2px; }
+
+  /* Side action icons on video */
+  .video-side-actions {
+    position: absolute;
+    right: 12px;
+    bottom: 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+  .side-action {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    cursor: pointer;
+  }
+  .side-action-icon { font-size: 24px; filter: drop-shadow(0 1px 3px rgba(0,0,0,0.7)); }
+  .side-action-label { font-size: 10px; color: #fff; font-weight: 500; text-shadow: 0 1px 3px rgba(0,0,0,0.8); }
+
+  /* Video subtitle bar */
+  .video-subtitle {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0,0,0,0.55);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 8px 12px;
+    text-align: left;
+  }
+
+  /* 더보기 expand section */
+  .more-section {
+    display: none;
+    padding: 0 14px 8px;
+  }
+  .more-section.open { display: block; }
+  .more-btn-row {
+    display: flex;
+    justify-content: flex-start;
+    padding: 6px 14px 4px;
+  }
+  .more-toggle-btn {
+    font-size: 13px;
+    color: #888;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 4px 8px;
+  }
+
+  /* Channel list in expanded section */
+  .channel-list-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid #f5f5f5;
+  }
+  .channel-list-avatar {
+    width: 32px; height: 32px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700; color: #fff;
+    flex-shrink: 0;
+  }
+  .channel-list-info { flex: 1; }
+  .channel-list-name { font-size: 13px; font-weight: 600; color: #000; }
+  .channel-list-subs { font-size: 11px; color: #888; }
+
 </style>
 </head>
 <body>
 <div id="phone-frame">
 
-  <!-- ===================== S1: Main (AI OFF) ===================== -->
+  <!-- ===================== S1: Main Screen ===================== -->
   <div class="screen active" id="s1">
     <div class="status-bar">
       <span class="time">10:54</span>
@@ -1587,17 +1481,6 @@
         <svg class="icon-svg" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       </div>
       <div class="avatar-circle">S</div>
-    </div>
-
-    <!-- AI Toggle -->
-    <div class="ai-toggle-row">
-      <div class="ai-label">
-        <span class="sparkle">✦</span>
-        <span>YouTube AI</span>
-      </div>
-      <div class="toggle-switch off" id="s1-toggle" onclick="goTo('s2')">
-        <div class="toggle-knob"></div>
-      </div>
     </div>
 
     <!-- Category Tabs -->
@@ -1680,123 +1563,6 @@
     </div>
   </div>
 
-  <!-- ===================== S2: Main (AI ON) ===================== -->
-  <div class="screen" id="s2">
-    <div class="status-bar">
-      <span class="time">10:54</span>
-      <div class="status-icons">
-        <svg class="icon-svg sm" viewBox="0 0 24 24"><path d="M1 6l7.5 6L1 18"/><path d="M9 6l7.5 6L9 18"/><path d="M17 6l6 6-6 6"/></svg>
-        <svg class="icon-svg sm" viewBox="0 0 24 24"><path d="M5 12.55a11 11 0 0 1 14.08 0M1.42 9a16 16 0 0 1 21.16 0M8.53 16.11a6 6 0 0 1 6.95 0M12 20h.01"/></svg>
-        <svg class="icon-svg sm" viewBox="0 0 24 24" fill="#000" stroke="none"><rect x="2" y="7" width="18" height="11" rx="2"/><path d="M22 11v3" stroke="#000" stroke-width="2.5" stroke-linecap="round"/></svg>
-      </div>
-    </div>
-
-    <div class="yt-header">
-      <div class="yt-logo">
-        <div class="yt-logo-icon">
-          <svg viewBox="0 0 24 24" fill="white"><polygon points="10,8 16,12 10,16"/></svg>
-        </div>
-        <span class="yt-logo-text">YouTube</span>
-      </div>
-      <div class="header-icon">
-        <svg class="icon-svg" viewBox="0 0 24 24"><path d="M2 8.5A6.5 6.5 0 0 1 8.5 2v0A6.5 6.5 0 0 1 15 8.5v0m-6.5 13V8.5"/><circle cx="17" cy="17" r="3"/><path d="M14 17h-1.5a2 2 0 0 0-2 2v2"/></svg>
-      </div>
-      <div class="header-icon notif-dot">
-        <svg class="icon-svg" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-      </div>
-      <div class="header-icon" onclick="goTo('s-search')">
-        <svg class="icon-svg" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      </div>
-      <div class="avatar-circle">S</div>
-    </div>
-
-    <div class="ai-toggle-row">
-      <div class="ai-label">
-        <span class="sparkle">✦</span>
-        <span>YouTube AI</span>
-      </div>
-      <div class="toggle-switch on" id="s2-toggle" onclick="goTo('s1')">
-        <div class="toggle-knob"></div>
-      </div>
-    </div>
-
-    <!-- AI Search Bar -->
-    <div class="ai-search-bar" onclick="goTo('s3')">
-      <svg class="icon-svg sm" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      <span>궁금한 정보를 검색해 보세요.</span>
-    </div>
-
-    <div class="cat-tabs">
-      <div class="cat-tab">Explore</div>
-      <div class="cat-tab active">All</div>
-      <div class="cat-tab">Mixes</div>
-      <div class="cat-tab">Music</div>
-      <div class="cat-tab">Graphic</div>
-    </div>
-
-    <div class="scroll-area">
-      <div class="video-card">
-        <div class="video-thumb sunset">
-          <div class="thumb-overlay"><span class="thumb-text">The Beauty of Existence</span></div>
-        </div>
-        <div class="video-info">
-          <div class="channel-avatar">N</div>
-          <div class="video-meta">
-            <div class="video-title">The Beauty of Existence - Heart Touching Nasheed</div>
-            <div class="video-sub"><span>19,210,251 views</span><span>·</span><span>Jul 1, 2016</span></div>
-          </div>
-          <div class="three-dots">⋮</div>
-        </div>
-      </div>
-
-      <div class="divider"></div>
-
-      <div class="section-header">
-        <div class="section-title">
-          <div class="shorts-logo">S</div>
-          <span>Shorts</span>
-          <span class="beta-badge">BETA</span>
-        </div>
-        <svg class="icon-svg sm" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
-      </div>
-      <div class="shorts-row">
-        <div class="short-card">
-          <div class="short-thumb ocean"><div class="thumb-overlay"><span style="color:rgba(255,255,255,0.8);font-size:10px;text-align:center;padding:4px">바다 풍경</span></div></div>
-          <div class="short-info">아름다운 바다</div>
-        </div>
-        <div class="short-card">
-          <div class="short-thumb forest"><div class="thumb-overlay"><span style="color:rgba(255,255,255,0.8);font-size:10px;text-align:center;padding:4px">숲 산책</span></div></div>
-          <div class="short-info">힐링 숲길</div>
-        </div>
-        <div class="short-card">
-          <div class="short-thumb sunset"><div class="thumb-overlay"><span style="color:rgba(255,255,255,0.8);font-size:10px;text-align:center;padding:4px">노을 감상</span></div></div>
-          <div class="short-info">아름다운 노을</div>
-        </div>
-      </div>
-      <div style="height:20px;"></div>
-    </div>
-
-    <div class="bottom-nav">
-      <div class="nav-item active">
-        <span class="nav-icon">🏠</span>
-        <span class="nav-label">홈</span>
-      </div>
-      <div class="nav-item">
-        <div class="shorts-logo" style="width:24px;height:24px;font-size:14px;">S</div>
-        <span class="nav-label">Shorts</span>
-      </div>
-      <div class="nav-plus">+</div>
-      <div class="nav-item">
-        <span class="nav-icon">📺</span>
-        <span class="nav-label">구독</span>
-      </div>
-      <div class="nav-item">
-        <span class="nav-icon">📚</span>
-        <span class="nav-label">Library</span>
-      </div>
-    </div>
-  </div>
-
   <!-- ===================== S-Search: Regular Search Input ===================== -->
   <div class="screen" id="s-search">
     <div class="status-bar">
@@ -1807,402 +1573,24 @@
       </div>
     </div>
 
-    <!-- 재검색 헤더 -->
-    <div class="s-search-header" style="border-bottom:1px solid #eee;">
+    <div class="s-search-header">
       <div class="back-btn" onclick="goBack()">←</div>
-      <span style="flex:1;font-size:16px;font-weight:700;color:#000;">재검색</span>
-      <span style="font-size:12px;color:#888;cursor:pointer;" onclick="rsResetAll()">초기화</span>
-    </div>
-
-    <!-- 현재 검색 컨텍스트 표시 -->
-    <div class="rs-context-bar">
-      <span class="rs-context-icon">🔍</span>
-      <span class="rs-context-text">현재 결과 기준으로 조건 추가<span class="rs-context-keyword">제주도·부산 여행</span></span>
-    </div>
-
-    <div class="scroll-area" style="padding:0;">
-
-      <div class="rs-option-group">
-
-        <!-- 영상 길이 -->
-        <div class="rs-option-row">
-          <span class="rs-option-title">영상 길이</span>
-          <div class="rs-chips-wrap">
-            <span class="rs-chip" onclick="rsToggleChip(this,'length')">5분 미만</span>
-            <span class="rs-chip" onclick="rsToggleChip(this,'length')">5~20분</span>
-            <span class="rs-chip" onclick="rsToggleChip(this,'length')">20분 이상</span>
-          </div>
-        </div>
-
-        <!-- 출처 채널 수 -->
-        <div class="rs-option-row">
-          <span class="rs-option-title">출처 채널</span>
-          <div class="rs-chips-wrap">
-            <span class="rs-chip" onclick="rsToggleChip(this,'channel')">1개</span>
-            <span class="rs-chip" onclick="rsToggleChip(this,'channel')">2~3개</span>
-            <span class="rs-chip" onclick="rsToggleChip(this,'channel')">4개 이상</span>
-          </div>
-        </div>
-
-        <!-- 업로드 시기 -->
-        <div class="rs-option-row">
-          <span class="rs-option-title">업로드</span>
-          <div class="rs-chips-wrap">
-            <span class="rs-chip" onclick="rsToggleChip(this,'upload')">최근 1주</span>
-            <span class="rs-chip" onclick="rsToggleChip(this,'upload')">최근 1개월</span>
-            <span class="rs-chip" onclick="rsToggleChip(this,'upload')">최근 1년</span>
-          </div>
-        </div>
-
-        <!-- 정렬 기준 -->
-        <div class="rs-option-row" style="border-bottom:none;">
-          <span class="rs-option-title">정렬</span>
-          <div class="rs-chips-wrap">
-            <span class="rs-chip selected" onclick="rsToggleChip(this,'sort')">관련도순</span>
-            <span class="rs-chip" onclick="rsToggleChip(this,'sort')">최신순</span>
-            <span class="rs-chip" onclick="rsToggleChip(this,'sort')">조회수순</span>
-          </div>
-        </div>
-
+      <div class="s-search-wrap">
+        <input id="s-search-input" type="text" placeholder="YouTube 검색"
+               onkeydown="if(event.key==='Enter'){var v=this.value.trim();if(v)searchRegular(v);}" />
       </div>
-
-      <div class="rs-divider"></div>
-
-      <!-- 자유문장 검색 -->
-      <div class="rs-free-section">
-        <div class="rs-free-label">추가 키워드 · 문장 입력</div>
-        <div class="rs-free-input-wrap">
-          <svg style="width:16px;height:16px;fill:none;stroke:#aaa;stroke-width:2;stroke-linecap:round;flex-shrink:0;" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <input id="s-search-input" type="text" placeholder="예: 숙소 제외하고, 맛집만 보고 싶어요"
-                 oninput="rsUpdateSendBtn(this)"
-                 onkeydown="if(event.key==='Enter'){rsApply();}" />
-          <div class="rs-free-send-btn" id="rs-send-btn" onclick="rsApply()">
-            <svg style="width:14px;height:14px;fill:#fff;stroke:none;" viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21 5,3"/></svg>
-          </div>
-        </div>
-        <div style="font-size:11px;color:#aaa;margin-top:6px;line-height:1.5;">
-          위 옵션과 함께 적용됩니다. 조건 없이 Enter만 눌러도 현재 선택만으로 재검색됩니다.
-        </div>
-      </div>
-
-      <!-- 재검색 실행 버튼 -->
-      <button class="rs-apply-btn" onclick="rsApply()">결과 내 재검색</button>
-
-      <div style="height:28px;"></div>
-    </div>
-  </div>
-
-  <!-- ===================== S3: YouTube AI Search ===================== -->
-  <div class="screen" id="s3">
-    <div class="status-bar">
-      <span class="time">10:54</span>
-      <div class="status-icons">
-        <svg class="icon-svg sm" viewBox="0 0 24 24"><path d="M5 12.55a11 11 0 0 1 14.08 0M1.42 9a16 16 0 0 1 21.16 0M8.53 16.11a6 6 0 0 1 6.95 0M12 20h.01"/></svg>
-        <svg class="icon-svg sm" viewBox="0 0 24 24" fill="#000" stroke="none"><rect x="2" y="7" width="18" height="11" rx="2"/><path d="M22 11v3" stroke="#000" stroke-width="2.5" stroke-linecap="round"/></svg>
+      <div class="mic-btn">
+        <svg style="width:18px;height:18px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;" viewBox="0 0 24 24">
+          <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+          <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+          <line x1="12" y1="19" x2="12" y2="23"/>
+          <line x1="8" y1="23" x2="16" y2="23"/>
+        </svg>
       </div>
     </div>
 
-    <div class="search-header">
-      <div class="back-btn" onclick="goBack()">←</div>
-      <div class="yt-ai-header-label" style="flex:1;">
-        <span class="sparkle" style="font-size:16px;">✦</span>
-        <span>YouTube AI</span>
-      </div>
-      <div class="header-icon">
-        <svg class="icon-svg" viewBox="0 0 24 24"><path d="M2 8.5A6.5 6.5 0 0 1 8.5 2v0A6.5 6.5 0 0 1 15 8.5v0m-6.5 13V8.5"/><circle cx="17" cy="17" r="3"/></svg>
-      </div>
-      <div class="header-icon notif-dot">
-        <svg class="icon-svg" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-      </div>
-      <div class="header-icon">
-        <svg class="icon-svg" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      </div>
-      <div class="avatar-circle">S</div>
-    </div>
-
-    <div class="big-search-bar" onclick="document.getElementById('s3-input').focus()">
-      <svg class="icon-svg sm" style="cursor:pointer;flex-shrink:0;" viewBox="0 0 24 24"
-           onclick="event.stopPropagation();var v=document.getElementById('s3-input').value.trim();if(v)searchAI(v);">
-        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-      </svg>
-      <input id="s3-input" type="text" placeholder="궁금한 정보를 검색해 보세요."
-             onkeydown="if(event.key==='Enter'){var v=this.value.trim();if(v)searchAI(v);}" />
-    </div>
-
-    <div class="scroll-area">
-      <!-- 검색어 예시 -->
-      <div class="section-label">검색어 예시</div>
-      <div class="example-links">
-        <div class="example-link" onclick="goTo('s4')">
-          <svg class="icon-svg sm" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          웨이브 체형에게 잘 어울리는 타미힐피거 진
-        </div>
-        <div class="example-link" onclick="goTo('s4')">
-          <svg class="icon-svg sm" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          극건성 피부 기초 제품 bx템 추천
-        </div>
-      </div>
-
-      <!-- 급상승 검색어 -->
-      <div class="trending-header">
-        <span class="trending-label">급상승 검색어</span>
-        <span class="trending-time">00:30 기준</span>
-      </div>
-      <div class="trending-grid">
-        <div class="trending-item" onclick="goTo('s4')">
-          <span class="trend-rank">1</span>
-          <span class="trend-name">PDRN</span>
-          <span class="trend-arrow trend-flat">-</span>
-        </div>
-        <div class="trending-item" onclick="goTo('s4')">
-          <span class="trend-rank">2</span>
-          <span class="trend-name">립밤</span>
-          <span class="trend-arrow trend-up">▲</span>
-        </div>
-        <div class="trending-item" onclick="goTo('s4')">
-          <span class="trend-rank">3</span>
-          <span class="trend-name">쿠션</span>
-          <span class="trend-arrow trend-up">▲</span>
-        </div>
-        <div class="trending-item" onclick="goTo('s4')">
-          <span class="trend-rank">4</span>
-          <span class="trend-name">쉐도우</span>
-          <span class="trend-arrow trend-up">▲</span>
-        </div>
-        <div class="trending-item" onclick="goTo('s4')">
-          <span class="trend-rank">5</span>
-          <span class="trend-name">컬러그램</span>
-          <span class="trend-arrow trend-up">▲</span>
-        </div>
-        <div class="trending-item" onclick="goTo('s4')">
-          <span class="trend-rank">6</span>
-          <span class="trend-name">블러셔</span>
-          <span class="trend-arrow trend-up">▲</span>
-        </div>
-        <div class="trending-item" onclick="goTo('s4')">
-          <span class="trend-rank">7</span>
-          <span class="trend-name">립</span>
-          <span class="trend-arrow trend-up">▲</span>
-        </div>
-        <div class="trending-item" onclick="goTo('s4')">
-          <span class="trend-rank">8</span>
-          <span class="trend-name">마스크팩</span>
-          <span class="trend-arrow trend-down">▼</span>
-        </div>
-        <div class="trending-item" onclick="goTo('s4')">
-          <span class="trend-rank">9</span>
-          <span class="trend-name">무화과</span>
-          <span class="trend-arrow trend-up">▲</span>
-        </div>
-        <div class="trending-item" onclick="goTo('s4')">
-          <span class="trend-rank">10</span>
-          <span class="trend-name">프리쥬비네이션</span>
-          <span class="trend-arrow trend-up">▲</span>
-        </div>
-      </div>
-
-      <div class="divider"></div>
-
-      <!-- 찰스엔터 구독 유저 검색어 -->
-      <div class="section-label">찰스엔터 구독 유저 검색어</div>
-      <div class="channel-links">
-        <div class="example-link" onclick="goTo('s4')">
-          <svg class="icon-svg sm" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          찰스엔터 간장계란밥 레시피
-        </div>
-        <div class="example-link" onclick="goTo('s4')">
-          <svg class="icon-svg sm" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          찰스엔터 먹는 영상 요약본
-        </div>
-        <div class="example-link" onclick="goTo('s4')">
-          <svg class="icon-svg sm" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          찰승헌쓰 드립 모음
-        </div>
-      </div>
-
-      <div class="divider"></div>
-
-      <!-- AI Shorts -->
-      <div class="section-header">
-        <div class="section-title">
-          <div class="shorts-logo">S</div>
-          <span>YouTube AI made Shorts</span>
-          <span class="beta-badge">BETA</span>
-        </div>
-      </div>
-      <div class="shorts-row">
-        <div class="short-card">
-          <div class="short-thumb space1"><div class="thumb-overlay"><span style="color:rgba(255,255,255,0.8);font-size:10px;text-align:center;padding:4px">우주 탐험</span></div></div>
-          <div class="short-info">AI 추천 쇼츠</div>
-        </div>
-        <div class="short-card">
-          <div class="short-thumb space2"><div class="thumb-overlay"><span style="color:rgba(255,255,255,0.8);font-size:10px;text-align:center;padding:4px">은하 여행</span></div></div>
-          <div class="short-info">AI 추천 쇼츠</div>
-        </div>
-        <div class="short-card">
-          <div class="short-thumb space3"><div class="thumb-overlay"><span style="color:rgba(255,255,255,0.8);font-size:10px;text-align:center;padding:4px">별빛 탐험</span></div></div>
-          <div class="short-info">AI 추천 쇼츠</div>
-        </div>
-      </div>
-
-      <div style="height:20px;"></div>
-    </div>
-
-    <div class="bottom-nav">
-      <div class="nav-item active">
-        <span class="nav-icon">🏠</span>
-        <span class="nav-label">홈</span>
-      </div>
-      <div class="nav-item">
-        <div class="shorts-logo" style="width:24px;height:24px;font-size:14px;">S</div>
-        <span class="nav-label">Shorts</span>
-      </div>
-      <div class="nav-plus">+</div>
-      <div class="nav-item">
-        <span class="nav-icon">📺</span>
-        <span class="nav-label">구독</span>
-      </div>
-      <div class="nav-item">
-        <span class="nav-icon">📚</span>
-        <span class="nav-label">Library</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- ===================== S4: AI Search Results ===================== -->
-  <div class="screen" id="s4">
-    <div class="status-bar">
-      <span class="time">10:54</span>
-      <div class="status-icons">
-        <svg class="icon-svg sm" viewBox="0 0 24 24"><path d="M5 12.55a11 11 0 0 1 14.08 0M1.42 9a16 16 0 0 1 21.16 0M8.53 16.11a6 6 0 0 1 6.95 0M12 20h.01"/></svg>
-        <svg class="icon-svg sm" viewBox="0 0 24 24" fill="#000" stroke="none"><rect x="2" y="7" width="18" height="11" rx="2"/><path d="M22 11v3" stroke="#000" stroke-width="2.5" stroke-linecap="round"/></svg>
-      </div>
-    </div>
-
-    <div class="search-header-row">
-      <div class="back-btn" onclick="goBack()">←</div>
-      <div class="search-bar-input">
-        <svg class="icon-svg sm" viewBox="0 0 24 24" style="flex-shrink:0;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input type="text" value="제주도 부산 여행 비교" readonly style="flex:1;border:none;background:transparent;font-size:13px;font-family:'Noto Sans KR',sans-serif;outline:none;"/>
-        <span class="x-btn">✕</span>
-      </div>
-      <div class="header-icon">
-        <svg class="icon-svg" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      </div>
-      <div class="avatar-circle">S</div>
-    </div>
-
-    <div class="s4-shorts-label">
-      <div class="shorts-logo">S</div>
-      <span>YouTube AI made Shorts</span>
-      <span class="beta-badge">BETA</span>
-    </div>
-
-    <!-- Filter Row -->
-    <div class="filter-row">
-      <button class="filter-btn" onclick="openFilter('s4-filter')">
-        <svg style="width:16px;height:16px;fill:none;stroke:#333;stroke-width:2;" viewBox="0 0 24 24"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
-        검색 필터
-      </button>
-    </div>
-
-    <div class="scroll-area">
-      <!-- AI Video -->
-      <div class="ai-video-area">
-        <div class="ai-video-inner">
-          <div class="ai-video-title">부산 vs. 제주도<br>여행 비교</div>
-          <div class="play-btn-large" onclick="goTo('s5')">
-            <svg viewBox="0 0 24 24" fill="white"><polygon points="5,3 19,12 5,21"/></svg>
-          </div>
-        </div>
-      </div>
-
-      <!-- Summary Card -->
-      <div class="summary-card">
-        <div class="summary-title">영상 요약 설명</div>
-        <div class="summary-text">제주도 부산 여행 비교라는 검색어와 관련성이 가장 높은 '유정', '찰스엔터', '제주에디 Jeju Eddy'의 영상을 활용하여 만들었습니다. 각 지역의 먹거리, 액티비티, 숙소를 비교 분석한 영상입니다.</div>
-      </div>
-
-      <!-- Chips -->
-      <div class="chips-row" id="s4-chips">
-        <button class="chip" onclick="appendChip('s4-improve-input', '더 다양하게')">더 다양하게</button>
-        <button class="chip" onclick="appendChip('s4-improve-input', '더 길게')">더 길게</button>
-        <button class="chip" onclick="appendChip('s4-improve-input', '더 짧게')">더 짧게</button>
-        <button class="chip" onclick="appendChip('s4-improve-input', '더 빠르게')">더 빠르게</button>
-      </div>
-
-      <!-- Input Row -->
-      <div class="input-row">
-        <input type="text" id="s4-improve-input" placeholder="영상을 어떻게 개선할까요?" />
-        <button class="send-btn" onclick="regenerateS4()">
-          <svg style="width:16px;height:16px;fill:none;stroke:#fff;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22,2 15,22 11,13 2,9"/></svg>
-        </button>
-      </div>
-
-      <div style="height:10px;"></div>
-    </div>
-
-    <div class="bottom-nav">
-      <div class="nav-item">
-        <span class="nav-icon">🏠</span>
-        <span class="nav-label">홈</span>
-      </div>
-      <div class="nav-item">
-        <div class="shorts-logo" style="width:24px;height:24px;font-size:14px;">S</div>
-        <span class="nav-label">Shorts</span>
-      </div>
-      <div class="nav-plus">+</div>
-      <div class="nav-item">
-        <span class="nav-icon">📺</span>
-        <span class="nav-label">구독</span>
-      </div>
-      <div class="nav-item" style="align-items:center;">
-        <div class="nav-avatar">S</div>
-        <span class="nav-label">내페이지</span>
-      </div>
-    </div>
-
-    <!-- Filter Overlay for S4 -->
-    <div class="filter-overlay" id="s4-filter">
-      <div class="filter-bg" onclick="closeFilter('s4-filter')"></div>
-      <div class="filter-panel">
-        <div class="filter-close" onclick="closeFilter('s4-filter')">← 검색 필터</div>
-        <div class="filter-section-title">영화</div>
-        <div class="filter-section-title" style="padding-top:8px;">길이</div>
-        <div class="filter-options">
-          <div class="filter-option" onclick="selectFilter(this, 's4-filter-length')">
-            <div class="radio-dot selected"></div><span>모두</span>
-          </div>
-          <div class="filter-option" onclick="selectFilter(this, 's4-filter-length')">
-            <div class="radio-dot"></div><span>3분 미만</span>
-          </div>
-          <div class="filter-option" onclick="selectFilter(this, 's4-filter-length')">
-            <div class="radio-dot"></div><span>3~20분</span>
-          </div>
-          <div class="filter-option" onclick="selectFilter(this, 's4-filter-length')">
-            <div class="radio-dot"></div><span>20분 초과</span>
-          </div>
-        </div>
-        <div class="filter-section-title">업로드 날짜</div>
-        <div class="filter-options">
-          <div class="filter-option" onclick="selectFilter(this, 's4-filter-date')">
-            <div class="radio-dot selected"></div><span>전체 기간</span>
-          </div>
-          <div class="filter-option" onclick="selectFilter(this, 's4-filter-date')">
-            <div class="radio-dot"></div><span>오늘</span>
-          </div>
-          <div class="filter-option" onclick="selectFilter(this, 's4-filter-date')">
-            <div class="radio-dot"></div><span>이번 주</span>
-          </div>
-          <div class="filter-option" onclick="selectFilter(this, 's4-filter-date')">
-            <div class="radio-dot"></div><span>이번 달</span>
-          </div>
-          <div class="filter-option" onclick="selectFilter(this, 's4-filter-date')">
-            <div class="radio-dot"></div><span>올해</span>
-          </div>
-        </div>
-      </div>
-    </div>
+    <!-- Empty content area (user types here, presses Enter) -->
+    <div style="flex:1;background:#fff;"></div>
   </div>
 
   <!-- ===================== S5: Video Player ===================== -->
@@ -2215,57 +1603,61 @@
       </div>
     </div>
 
+    <!-- Header row: back + title -->
     <div class="player-header">
       <div class="back-btn" onclick="goBack()">←</div>
-      <div class="player-brand">
-        <div class="shorts-logo" style="width:26px;height:26px;font-size:14px;background:#ff0000;">S</div>
-        <div class="player-brand-text">YouTube AI made<br>Shorts BETA</div>
-      </div>
-      <div class="header-icon">
-        <svg class="icon-svg" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      </div>
-      <div class="header-icon" style="font-size:22px;font-weight:700;letter-spacing:1px;">⋮</div>
+      <span style="font-size:16px;font-weight:700;color:#000;flex:1;">부산 vs. 제주도 여행 비교</span>
     </div>
 
-    <div class="player-meta">
-      <div class="player-main-title">부산 vs. 제주도 여행 비교</div>
-      <div class="player-chapter">1. 먹거리</div>
-    </div>
+    <!-- Full-screen video fills all space between header and bottom-nav -->
+    <div style="flex:1;position:relative;background:linear-gradient(160deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);overflow:hidden;">
 
-    <div class="scroll-area">
-      <!-- Segment 1 -->
-      <div class="video-segment green">
-        <div class="segment-label">제주 - 다람쥐 쇼쿠지</div>
-        <div class="segment-question">다람쥐 쇼쿠지?</div>
-        <div class="segment-channel seg-ch-blue" onclick="alert('유정 채널로 이동')">유</div>
-      </div>
+      <!-- Subtitle bar -->
+      <div class="video-subtitle" style="bottom:52px;">🎬 제주 다람쥐 쇼쿠지</div>
 
-      <!-- Segment 2 -->
-      <div class="video-segment blue">
-        <div class="segment-label">부산 - 이재모 피자</div>
-        <div class="segment-channel seg-ch-orange" onclick="alert('찰스엔터 채널로 이동')">찰</div>
-      </div>
-
-      <!-- Progress Bar -->
-      <div class="progress-area">
-        <div class="progress-bar">
-          <div class="progress-fill"></div>
-          <div class="progress-dot" style="left:0%"></div>
-          <div class="progress-dot" style="left:45%"></div>
-          <div class="progress-dot" style="left:80%"></div>
-        </div>
-        <div class="progress-time">
-          <span>0:42</span>
-          <span>2:18</span>
+      <!-- Channel profile overlay – bottom left -->
+      <div style="position:absolute;bottom:12px;left:12px;display:flex;align-items:center;gap:8px;z-index:2;">
+        <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#1565C0,#42a5f5);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;border:2px solid rgba(255,255,255,0.6);flex-shrink:0;">유</div>
+        <div>
+          <div style="font-size:13px;font-weight:700;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,0.8);">유정 ✓ <span style="font-size:11px;font-weight:400;opacity:0.8;">(외 2채널 참여)</span></div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.75);text-shadow:0 1px 3px rgba(0,0,0,0.7);">구독자 120만명</div>
         </div>
       </div>
 
-      <!-- Hashtags -->
-      <div class="hashtags">
-        부산 vs. 제주도 여행 비교 #YouTubeAImade #부산 #제주 <span class="more-link" onclick="goTo('s6')">더보기...</span>
+      <!-- Side action icons – bottom right -->
+      <div class="video-side-actions">
+        <div class="side-action" onclick="showToast('공유 기능')">
+          <span class="side-action-icon">📤</span>
+          <span class="side-action-label">공유</span>
+        </div>
+        <div class="side-action" onclick="showToast('저장됨')">
+          <span class="side-action-icon">💾</span>
+          <span class="side-action-label">저장</span>
+        </div>
+        <div class="side-action" onclick="goTo('s-search')">
+          <span class="side-action-icon">🔍</span>
+          <span class="side-action-label">재검색</span>
+        </div>
+        <div class="side-action" onclick="goTo('s6')">
+          <span class="side-action-icon" style="font-size:22px;font-weight:700;">⋮</span>
+          <span class="side-action-label">더보기</span>
+        </div>
       </div>
 
-      <div style="height:10px;"></div>
+    </div>
+
+    <!-- Progress bar between video and bottom-nav -->
+    <div class="progress-area" style="background:#fff;padding:8px 14px 6px;">
+      <div class="progress-bar">
+        <div class="progress-fill"></div>
+        <div class="progress-dot" style="left:0%"></div>
+        <div class="progress-dot" style="left:45%"></div>
+        <div class="progress-dot" style="left:80%"></div>
+      </div>
+      <div class="progress-time">
+        <span>0:42</span>
+        <span>2:18</span>
+      </div>
     </div>
 
     <div class="bottom-nav">
@@ -2305,7 +1697,7 @@
         <div class="source-brand-icon">
           <svg viewBox="0 0 24 24" fill="white" width="14" height="14"><polygon points="5,3 19,12 5,21"/></svg>
         </div>
-        <span style="font-size:14px;font-weight:700;">AI Shorts</span>
+        <span style="font-size:14px;font-weight:700;">AI Shorts Highlight BETA</span>
       </div>
       <div class="header-icon">
         <svg class="icon-svg" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
@@ -2519,50 +1911,132 @@
       <div class="header-icon" style="font-size:22px;font-weight:700;">⋮</div>
     </div>
 
-    <!-- Tab Bar -->
+    <!-- Tab Bar (no 영상요약 tab) -->
     <div class="search-tab-bar">
       <div class="search-tab active">전체</div>
-      <div class="search-tab ai-tab" onclick="goTo('s3a')">✦ 영상요약</div>
       <div class="search-tab">시청하지않음</div>
       <div class="search-tab">감상한 동영상</div>
       <div class="search-tab">동영...</div>
     </div>
 
     <div class="scroll-area">
-      <!-- 2x2 Video Grid -->
-      <div class="video-grid">
-        <!-- Card 1 -->
-        <div class="grid-card">
-          <div class="grid-thumb orange">
-            <div class="thumb-overlay"><span style="color:rgba(255,255,255,0.85);font-size:10px;text-align:center;padding:4px;">제주 맛집</span></div>
+
+      <!-- AI Shorts label -->
+      <div style="padding:10px 14px 2px;display:flex;align-items:center;gap:6px;">
+        <span style="background:#ff0000;color:#fff;font-size:11px;font-weight:700;padding:2px 8px;border-radius:4px;letter-spacing:0.3px;">AI Shorts</span>
+        <span style="font-size:13px;color:#444;font-weight:500;">검색어 기반 자동 편집 영상</span>
+      </div>
+
+      <!-- AI Summary Video Section -->
+      <div class="ai-video-area">
+        <div class="ai-video-inner">
+          <div class="ai-video-title">제주도 맛집 영상 요약</div>
+          <div class="play-btn-large" onclick="goTo('s5')">
+            <svg viewBox="0 0 24 24" fill="white"><polygon points="5,3 19,12 5,21"/></svg>
           </div>
-          <div class="grid-title">제주도민 추천 찐 맛집 ※메모 필수※</div>
-          <div class="grid-channel">ootb STUDIO</div>
         </div>
-        <!-- Card 2 -->
-        <div class="grid-card">
-          <div class="grid-thumb teal">
-            <div class="thumb-overlay"><span style="color:rgba(255,255,255,0.85);font-size:10px;text-align:center;padding:4px;">제주 맛집</span></div>
+      </div>
+
+      <!-- 더보기 button row -->
+      <div class="more-btn-row">
+        <button class="more-toggle-btn" id="s2a-more-btn" onclick="toggleMoreSection(this)">더보기 ▼</button>
+      </div>
+
+      <!-- Expandable section -->
+      <div class="more-section" id="s2a-more-section">
+        <!-- Summary card -->
+        <div class="summary-card" style="margin:0 0 10px;">
+          <div class="summary-title">영상 내용 요약</div>
+          <div class="summary-text">제주도 맛집이라는 검색어와 관련성이 가장 높은 영상들을 활용하여 만들었습니다. 택시기사님 추천 쥐치조림부터 로컬들이 사랑하는 순두부찌개 맛집까지, 아는 사람만 아는 찐 제주도 맛집을 소개합니다.</div>
+        </div>
+        <!-- Channel list -->
+        <div style="font-size:13px;font-weight:700;color:#000;margin-bottom:8px;">영상 제작에 사용된 채널</div>
+        <div class="channel-list-item">
+          <div class="channel-list-avatar av-blue">유</div>
+          <div class="channel-list-info">
+            <div class="channel-list-name">유정</div>
+            <div class="channel-list-subs">구독자 120만명</div>
           </div>
-          <div class="grid-title">제주도민 추천 찐 맛집 ※메모 필수※</div>
-          <div class="grid-channel">오밍스</div>
         </div>
-        <!-- Card 3 -->
-        <div class="grid-card">
-          <div class="grid-thumb palm">
-            <div class="thumb-overlay"><span style="color:rgba(255,255,255,0.85);font-size:10px;text-align:center;padding:4px;">맛집 코스</span></div>
+        <div class="channel-list-item">
+          <div class="channel-list-avatar" style="background:linear-gradient(135deg,#f953c6,#b91d73);">소</div>
+          <div class="channel-list-info">
+            <div class="channel-list-name">소희맨션soheemansion</div>
+            <div class="channel-list-subs">구독자 85만명</div>
           </div>
-          <div class="grid-title">제주도맛집 필수 코스 top4</div>
-          <div class="grid-channel">서이두</div>
         </div>
-        <!-- Card 4 -->
-        <div class="grid-card">
-          <div class="grid-thumb food">
-            <div class="thumb-overlay"><span style="color:rgba(255,255,255,0.85);font-size:10px;text-align:center;padding:4px;">동쪽 맛집</span></div>
+        <div class="channel-list-item" style="border-bottom:none;">
+          <div class="channel-list-avatar av-teal">제</div>
+          <div class="channel-list-info">
+            <div class="channel-list-name">제주에디 Jeju Eddy</div>
+            <div class="channel-list-subs">구독자 42만명</div>
           </div>
-          <div class="grid-title">도민도 인정한 제주 동쪽 맛집 top4 #제주맛집추천</div>
-          <div class="grid-channel">현주zip</div>
         </div>
+      </div>
+
+      <!-- Mixed Shorts + Regular Feed -->
+      <div class="mixed-feed">
+
+        <!-- Row 1: Two Shorts side by side -->
+        <div class="shorts-row">
+          <div class="shorts-card">
+            <div class="shorts-thumb orange">
+              <div class="thumb-overlay"><span style="color:#fff;font-size:18px;">🍊</span></div>
+              <div class="shorts-badge">Shorts</div>
+            </div>
+            <div class="shorts-title">제주 흑돼지 맛집 솔직 후기 (현지인 픽)</div>
+            <div class="shorts-channel">ootb STUDIO</div>
+          </div>
+          <div class="shorts-card">
+            <div class="shorts-thumb teal">
+              <div class="thumb-overlay"><span style="color:#fff;font-size:18px;">🌊</span></div>
+              <div class="shorts-badge">Shorts</div>
+            </div>
+            <div class="shorts-title">제주 뷰 맛집 TOP3 30초 요약</div>
+            <div class="shorts-channel">오밍스</div>
+          </div>
+        </div>
+
+        <!-- Row 2: Regular video (full-width) -->
+        <div class="regular-card">
+          <div class="regular-thumb palm">
+            <div class="thumb-overlay"><span style="color:#fff;font-size:20px;">🌴</span></div>
+            <div class="regular-duration">18:29</div>
+          </div>
+          <div class="regular-title">제주도민이 추천하는 찐 맛집 코스 (성산·서귀포 편)</div>
+          <div class="regular-channel">서이두 · 조회수 241만 · 2일 전</div>
+        </div>
+
+        <!-- Row 3: Two more Shorts -->
+        <div class="shorts-row">
+          <div class="shorts-card">
+            <div class="shorts-thumb food">
+              <div class="thumb-overlay"><span style="color:#fff;font-size:18px;">🍜</span></div>
+              <div class="shorts-badge">Shorts</div>
+            </div>
+            <div class="shorts-title">제주 숨은 국수 맛집 발굴</div>
+            <div class="shorts-channel">현주zip</div>
+          </div>
+          <div class="shorts-card">
+            <div class="shorts-thumb rose">
+              <div class="thumb-overlay"><span style="color:#fff;font-size:18px;">🫧</span></div>
+              <div class="shorts-badge">Shorts</div>
+            </div>
+            <div class="shorts-title">제주 카페 인생샷 명소 3곳</div>
+            <div class="shorts-channel">소희맨션</div>
+          </div>
+        </div>
+
+        <!-- Row 4: Regular video (full-width) -->
+        <div class="regular-card">
+          <div class="regular-thumb blue">
+            <div class="thumb-overlay"><span style="color:#fff;font-size:20px;">✈️</span></div>
+            <div class="regular-duration">22:10</div>
+          </div>
+          <div class="regular-title">제주 여행 2박 3일 완전 정복 (맛집+숙소+코스 총정리)</div>
+          <div class="regular-channel">유정 · 조회수 87만 · 5일 전</div>
+        </div>
+
       </div>
 
       <div style="height:10px;"></div>
@@ -2589,142 +2063,6 @@
     </div>
   </div>
 
-  <!-- ===================== S3a: 영상요약 Results ===================== -->
-  <div class="screen" id="s3a">
-    <div class="status-bar">
-      <span class="time">10:54 🔕</span>
-      <div class="status-icons">
-        <svg class="icon-svg sm" viewBox="0 0 24 24"><path d="M5 12.55a11 11 0 0 1 14.08 0M1.42 9a16 16 0 0 1 21.16 0M8.53 16.11a6 6 0 0 1 6.95 0M12 20h.01"/></svg>
-        <svg class="icon-svg sm" viewBox="0 0 24 24" fill="#000" stroke="none"><rect x="2" y="7" width="18" height="11" rx="2"/><path d="M22 11v3" stroke="#000" stroke-width="2.5" stroke-linecap="round"/></svg>
-      </div>
-    </div>
-
-    <div class="search-header-row">
-      <div class="back-btn" onclick="goBack()">←</div>
-      <div class="search-bar-input">
-        <input type="text" value="제주도 맛집" readonly />
-        <span class="x-btn">✕</span>
-        <svg class="icon-svg sm" viewBox="0 0 24 24" style="flex-shrink:0;"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
-      </div>
-      <div class="header-icon" style="font-size:22px;font-weight:700;">⋮</div>
-    </div>
-
-    <!-- Tab Bar - 영상요약 active -->
-    <div class="search-tab-bar">
-      <div class="search-tab" onclick="goBack()">전체</div>
-      <div class="search-tab ai-tab active">✦ 영상요약</div>
-      <div class="search-tab">시청하지않음</div>
-      <div class="search-tab">감상한 동영상</div>
-      <div class="search-tab">동영...</div>
-    </div>
-
-    <!-- Filter Row -->
-    <div class="filter-row">
-      <button class="filter-btn" onclick="openFilter('s3a-filter')">
-        <svg style="width:16px;height:16px;fill:none;stroke:#333;stroke-width:2;" viewBox="0 0 24 24"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
-        검색 필터
-      </button>
-    </div>
-
-    <div class="scroll-area">
-      <!-- AI Video -->
-      <div class="ai-video-area">
-        <div class="ai-video-inner">
-          <div class="ai-video-title">제주도 맛집<br>영상 요약</div>
-          <div class="play-btn-large" onclick="goTo('s5')">
-            <svg viewBox="0 0 24 24" fill="white"><polygon points="5,3 19,12 5,21"/></svg>
-          </div>
-        </div>
-      </div>
-
-      <!-- Summary Card -->
-      <div class="summary-card">
-        <div class="summary-title">영상 요약 설명</div>
-        <div class="summary-text">제주도 맛집이라는 검색어와 관련성이 가장 높은 '소희맨션soheemansion', '여행ON-여행 에디터의 여행정보', '제주에디 Jeju Eddy'의 영상을 활용하여 만들었습니다. 택시기사님 추천 쥐치조림부터 로컬들이 사랑하는 순두부찌개 맛집까지 아는 사람만 아는 찐 제주도 맛집을 소개합니다.</div>
-      </div>
-
-      <!-- Chips -->
-      <div class="chips-row">
-        <button class="chip" onclick="appendChip('s3a-improve-input', '더 다양하게')">더 다양하게</button>
-        <button class="chip" onclick="appendChip('s3a-improve-input', '더 길게')">더 길게</button>
-        <button class="chip" onclick="appendChip('s3a-improve-input', '더 짧게')">더 짧게</button>
-        <button class="chip" onclick="appendChip('s3a-improve-input', '더 빠르게')">더 빠르게</button>
-      </div>
-
-      <!-- Input Row -->
-      <div class="input-row">
-        <input type="text" id="s3a-improve-input" placeholder="영상을 어떻게 개선할까요?" />
-        <button class="send-btn" onclick="regenerateS3a()">
-          <svg style="width:16px;height:16px;fill:none;stroke:#fff;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22,2 15,22 11,13 2,9"/></svg>
-        </button>
-      </div>
-
-      <div style="height:10px;"></div>
-    </div>
-
-    <div class="bottom-nav">
-      <div class="nav-item">
-        <span class="nav-icon">🏠</span>
-        <span class="nav-label">홈</span>
-      </div>
-      <div class="nav-item">
-        <div class="shorts-logo" style="width:24px;height:24px;font-size:14px;">S</div>
-        <span class="nav-label">Shorts</span>
-      </div>
-      <div class="nav-plus">+</div>
-      <div class="nav-item">
-        <span class="nav-icon">📺</span>
-        <span class="nav-label">구독</span>
-      </div>
-      <div class="nav-item" style="align-items:center;">
-        <div class="nav-avatar">S</div>
-        <span class="nav-label">내페이지</span>
-      </div>
-    </div>
-
-    <!-- Filter Overlay for S3a -->
-    <div class="filter-overlay" id="s3a-filter">
-      <div class="filter-bg" onclick="closeFilter('s3a-filter')"></div>
-      <div class="filter-panel">
-        <div class="filter-close" onclick="closeFilter('s3a-filter')">← 검색 필터</div>
-        <div class="filter-section-title">영화</div>
-        <div class="filter-section-title" style="padding-top:8px;">길이</div>
-        <div class="filter-options">
-          <div class="filter-option" onclick="selectFilter(this, 's3a-filter-length')">
-            <div class="radio-dot selected"></div><span>모두</span>
-          </div>
-          <div class="filter-option" onclick="selectFilter(this, 's3a-filter-length')">
-            <div class="radio-dot"></div><span>3분 미만</span>
-          </div>
-          <div class="filter-option" onclick="selectFilter(this, 's3a-filter-length')">
-            <div class="radio-dot"></div><span>3~20분</span>
-          </div>
-          <div class="filter-option" onclick="selectFilter(this, 's3a-filter-length')">
-            <div class="radio-dot"></div><span>20분 초과</span>
-          </div>
-        </div>
-        <div class="filter-section-title">업로드 날짜</div>
-        <div class="filter-options">
-          <div class="filter-option" onclick="selectFilter(this, 's3a-filter-date')">
-            <div class="radio-dot selected"></div><span>전체 기간</span>
-          </div>
-          <div class="filter-option" onclick="selectFilter(this, 's3a-filter-date')">
-            <div class="radio-dot"></div><span>오늘</span>
-          </div>
-          <div class="filter-option" onclick="selectFilter(this, 's3a-filter-date')">
-            <div class="radio-dot"></div><span>이번 주</span>
-          </div>
-          <div class="filter-option" onclick="selectFilter(this, 's3a-filter-date')">
-            <div class="radio-dot"></div><span>이번 달</span>
-          </div>
-          <div class="filter-option" onclick="selectFilter(this, 's3a-filter-date')">
-            <div class="radio-dot"></div><span>올해</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
 </div><!-- end phone-frame -->
 
 <script>
@@ -2733,7 +2071,6 @@
   let currentScreen = 's1';
 
   function showScreen(id, animate) {
-    // Hide all
     document.querySelectorAll('.screen').forEach(s => {
       s.classList.remove('active');
       s.style.display = 'none';
@@ -2754,7 +2091,6 @@
         }, 200);
       });
     }
-    // Scroll to top
     const scrollArea = el.querySelector('.scroll-area');
     if (scrollArea) scrollArea.scrollTop = 0;
     currentScreen = id;
@@ -2763,25 +2099,17 @@
   function goTo(screenId) {
     navStack.push(currentScreen);
     showScreen(screenId, true);
-    // Auto-focus search inputs when navigating to search entry screens
     if (screenId === 's-search') {
       setTimeout(() => {
         const inp = document.getElementById('s-search-input');
-        if (inp) { inp.value = ''; rsUpdateSendBtn(inp); }
+        if (inp) { inp.value = ''; inp.focus(); }
       }, 220);
-    }
-    if (screenId === 's3') {
-      setTimeout(() => {
-        const inp = document.getElementById('s3-input');
-        if (inp) inp.value = '';
-      }, 50);
     }
   }
 
   function goBack() {
     if (navStack.length === 0) return;
     const prev = navStack.pop();
-    // Slide back animation
     const el = document.getElementById(prev);
     document.querySelectorAll('.screen').forEach(s => {
       s.classList.remove('active');
@@ -2802,123 +2130,11 @@
     currentScreen = prev;
   }
 
-  // Toggle
-  function toggleAI(toScreen) {
-    navStack = [];
-    showScreen(toScreen, false);
-  }
-
-  // Filter panel
-  let filterWasChanged = false;
-
-  function openFilter(id) {
-    const overlay = document.getElementById(id);
-    if (!overlay) return;
-    filterWasChanged = false;
-    overlay.classList.add('open');
-  }
-
-  function closeFilter(id) {
-    const overlay = document.getElementById(id);
-    if (!overlay) return;
-    overlay.classList.remove('open');
-
-    if (filterWasChanged) {
-      filterWasChanged = false;
-      // Determine which screen owns this filter
-      const screen = overlay.closest('.screen');
-      if (screen) showVideoLoading(screen.id);
-    }
-  }
-
-  function showVideoLoading(screenId) {
-    const videoArea = document.querySelector('#' + screenId + ' .ai-video-area');
-    if (!videoArea) return;
-    // Prevent duplicate overlays
-    if (videoArea.querySelector('.video-loading-overlay')) return;
-    const loader = document.createElement('div');
-    loader.className = 'video-loading-overlay';
-    loader.innerHTML = '<div class="loading-spinner"></div><div class="loading-text">AI가 영상을 재생성하는 중...</div>';
-    videoArea.style.position = 'relative';
-    videoArea.appendChild(loader);
-    setTimeout(() => { loader.remove(); }, 2000);
-  }
-
-  // Radio-style filter select
-  function selectFilter(clicked, groupName) {
-    const panel = clicked.closest('.filter-panel');
-    if (!panel) return;
-    // Find options in the same section group
-    const sections = panel.querySelectorAll('.filter-section-title');
-    let clickedSection = null;
-    sections.forEach(sec => {
-      let next = sec.nextElementSibling;
-      while (next && next.classList.contains('filter-options')) {
-        if (next.contains(clicked)) clickedSection = next;
-        next = next.nextElementSibling;
-      }
-    });
-    if (clickedSection) {
-      clickedSection.querySelectorAll('.radio-dot').forEach(dot => dot.classList.remove('selected'));
-      const dot = clicked.querySelector('.radio-dot');
-      if (dot) dot.classList.add('selected');
-    }
-    // Check if selection is non-default
-    const selectedText = clicked.querySelector('span') ? clicked.querySelector('span').textContent : '';
-    if (selectedText !== '모두' && selectedText !== '전체 기간') {
-      filterWasChanged = true;
-    }
-  }
-
   // Regular search: navigate from s-search → s2a
   function searchRegular(query) {
-    // Update the query text in s2a and s3a headers
-    const targets = ['#s2a .search-bar-input input', '#s3a .search-bar-input input'];
-    targets.forEach(sel => {
-      const el = document.querySelector(sel);
-      if (el) el.value = query;
-    });
+    const el = document.querySelector('#s2a .search-bar-input input');
+    if (el) el.value = query;
     goTo('s2a');
-  }
-
-  // 재검색 칩 토글 (같은 그룹은 단일 선택)
-  function rsToggleChip(chip, group) {
-    const wrap = chip.closest('.rs-chips-wrap');
-    if (!wrap) return;
-    const isSelected = chip.classList.contains('selected');
-    wrap.querySelectorAll('.rs-chip').forEach(c => c.classList.remove('selected'));
-    if (!isSelected) chip.classList.add('selected');
-  }
-
-  // 자유입력 있을 때 전송 버튼 활성화
-  function rsUpdateSendBtn(input) {
-    const btn = document.getElementById('rs-send-btn');
-    if (btn) btn.classList.toggle('active', input.value.trim().length > 0);
-  }
-
-  // 재검색 실행
-  function rsApply() {
-    showToast('재검색 중...');
-    setTimeout(() => goTo('s2a'), 700);
-  }
-
-  // 재검색 초기화
-  function rsResetAll() {
-    document.querySelectorAll('#s-search .rs-chip').forEach(c => c.classList.remove('selected'));
-    const sortChips = document.querySelectorAll('#s-search .rs-option-row:last-child .rs-chip');
-    if (sortChips[0]) sortChips[0].classList.add('selected');
-    const inp = document.getElementById('s-search-input');
-    if (inp) { inp.value = ''; rsUpdateSendBtn(inp); }
-    showToast('초기화됨');
-  }
-
-  // AI search: navigate from s3 search bar → s4
-  function searchAI(query) {
-    if (!query || !query.trim()) return;
-    // Update the query text in s4 header
-    const s4Input = document.querySelector('#s4 .search-bar-input input');
-    if (s4Input) s4Input.value = query.trim();
-    goTo('s4');
   }
 
   // Chips
@@ -2928,35 +2144,6 @@
     const current = input.value.trim();
     input.value = current ? current + ' ' + text : text;
     input.focus();
-  }
-
-  // Regenerate (refresh effect)
-  function regenerateS4() {
-    const input = document.getElementById('s4-improve-input');
-    if (!input || !input.value.trim()) return;
-    const area = document.querySelector('#s4 .ai-video-area');
-    if (area) {
-      area.style.opacity = '0.4';
-      area.style.transition = 'opacity 0.3s';
-      setTimeout(() => {
-        area.style.opacity = '1';
-        input.value = '';
-      }, 600);
-    }
-  }
-
-  function regenerateS3a() {
-    const input = document.getElementById('s3a-improve-input');
-    if (!input || !input.value.trim()) return;
-    const area = document.querySelector('#s3a .ai-video-area');
-    if (area) {
-      area.style.opacity = '0.4';
-      area.style.transition = 'opacity 0.3s';
-      setTimeout(() => {
-        area.style.opacity = '1';
-        input.value = '';
-      }, 600);
-    }
   }
 
   // Subscribe toggle
@@ -2972,7 +2159,6 @@
 
   // Toast notification
   function showToast(msg) {
-    // Remove existing toasts
     document.querySelectorAll('.yt-toast').forEach(t => t.remove());
     const toast = document.createElement('div');
     toast.className = 'yt-toast';
@@ -2997,19 +2183,27 @@
     }, 700);
   }
 
-  // s6: click delegation — thumbnail → openVideo, avoid bubbling from subscribe/channel-name
+  // Toggle the 더보기 expandable section in s2a
+  function toggleMoreSection(btn) {
+    const section = document.getElementById('s2a-more-section');
+    if (!section) return;
+    if (section.classList.contains('open')) {
+      section.classList.remove('open');
+      btn.textContent = '더보기 ▼';
+    } else {
+      section.classList.add('open');
+      btn.textContent = '접기 ▲';
+    }
+  }
+
+  // s6: click delegation — thumbnail → openVideo
   document.getElementById('s6').addEventListener('click', function(e) {
-    // Subscribe button: handled separately, stop here
     if (e.target.closest('.subscribe-btn')) return;
-    // Channel name: handled by inline onclick, stop here
     if (e.target.closest('.channel-name')) return;
-    // Thumbnail area click
     const thumb = e.target.closest('.source-thumb');
     if (thumb) {
-      // Find which item this belongs to to get channel id
       const item = thumb.closest('.source-item');
       const channelLink = item ? item.querySelector('.channel-name') : null;
-      // Extract the channel id from the onclick attribute
       let channelId = '';
       if (channelLink) {
         const match = channelLink.getAttribute('onclick').match(/'(@[^']+)'/);
