@@ -1,0 +1,9 @@
+<svg preserveAspectRatio="none" width="100%" height="100%" overflow="visible" style="display: block;" viewBox="0 0 35 35" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Group 2">
+<path id="Ellipse 1 (Stroke)" fill-rule="evenodd" clip-rule="evenodd" d="M17.5 33.0556C26.0911 33.0556 33.0556 26.0911 33.0556 17.5C33.0556 8.9089 26.0911 1.94444 17.5 1.94444C8.9089 1.94444 1.94444 8.9089 1.94444 17.5C1.94444 26.0911 8.9089 33.0556 17.5 33.0556ZM17.5 35C27.165 35 35 27.165 35 17.5C35 7.83502 27.165 0 17.5 0C7.83502 0 0 7.83502 0 17.5C0 27.165 7.83502 35 17.5 35Z" fill="var(--fill-0, white)"/>
+<g id="Group 1">
+<path id="Line 1 (Stroke)" fill-rule="evenodd" clip-rule="evenodd" d="M28 19.25H7V16.625H28V19.25Z" fill="var(--fill-0, white)"/>
+<path id="Line 2 (Stroke)" fill-rule="evenodd" clip-rule="evenodd" d="M15.75 28L15.75 7L18.375 7L18.375 28L15.75 28Z" fill="var(--fill-0, white)"/>
+</g>
+</g>
+</svg>
