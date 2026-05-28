@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YouTube AI 관리자 도구</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, 'Noto Sans KR', sans-serif; background: #f5f5f5; color: #111; font-size: 14px; }
+.top-bar { position: sticky; top: 0; z-index: 100; background: #111; color: #fff; display: flex; align-items: center; justify-content: space-between; padding: 12px 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+.top-bar h1 { font-size: 16px; font-weight: 700; }
+.top-bar .actions { display: flex; gap: 8px; }
+.btn { padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-size: 13px; font-weight: 600; transition: background 0.15s; }
+.btn-primary { background: #ff0000; color: #fff; }
+.btn-primary:hover { background: #cc0000; }
+.btn-secondary { background: #333; color: #fff; }
+.btn-secondary:hover { background: #555; }
+.btn-sm { padding: 5px 10px; font-size: 12px; border-radius: 6px; }
+.btn-danger { background: #e53935; color: #fff; }
+.btn-danger:hover { background: #b71c1c; }
+.btn-ghost { background: #eee; color: #333; }
+.btn-ghost:hover { background: #ddd; }
+.tabs { display: flex; background: #fff; border-bottom: 2px solid #eee; overflow-x: auto; flex-shrink: 0; }
+.tabs::-webkit-scrollbar { display: none; }
+.tab { padding: 12px 18px; font-size: 13px; font-weight: 600; color: #888; cursor: pointer; white-space: nowrap; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: color 0.15s; }
+.tab.active { color: #ff0000; border-bottom-color: #ff0000; }
+.tab:hover:not(.active) { color: #333; }
+.panel { display: none; padding: 20px; max-width: 800px; margin: 0 auto; }
+.panel.active { display: block; }
+.card { background: #fff; border-radius: 12px; padding: 16px; margin-bottom: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+.card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.card-title { font-size: 14px; font-weight: 700; color: #111; }
+label { display: block; font-size: 12px; font-weight: 600; color: #555; margin-bottom: 4px; margin-top: 10px; }
+label:first-child { margin-top: 0; }
+input[type=text], input[type=number], input[type=url], textarea, select {
+  width: 100%; padding: 8px 10px; border: 1.5px solid #ddd; border-radius: 8px;
+  font-size: 13px; font-family: inherit; outline: none; transition: border-color 0.15s;
+  background: #fff; color: #111;
+}
+input:focus, textarea:focus, select:focus { border-color: #ff0000; }
+textarea { resize: vertical; min-height: 60px; }
+.row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+.img-upload-area { border: 2px dashed #ddd; border-radius: 10px; padding: 16px; text-align: center; cursor: pointer; transition: border-color 0.15s; }
+.img-upload-area:hover { border-color: #ff0000; }
+.img-upload-area img { max-width: 100%; max-height: 150px; object-fit: contain; border-radius: 6px; margin-bottom: 8px; display: block; margin-left: auto; margin-right: auto; }
+.img-upload-area p { font-size: 12px; color: #888; }
+.img-upload-area input[type=file] { display: none; }
+.item-row { background: #f9f9f9; border-radius: 10px; padding: 12px 14px; margin-bottom: 8px; border: 1.5px solid #eee; }
+.item-row-header { display: flex; align-items: center; justify-content: space-between; cursor: pointer; }
+.item-row-title { font-size: 13px; font-weight: 600; color: #222; }
+.item-row-sub { font-size: 11px; color: #888; margin-top: 2px; }
+.item-row-body { margin-top: 12px; display: none; }
+.item-row-body.open { display: block; }
+.item-actions { display: flex; gap: 6px; align-items: center; }
+.badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 700; letter-spacing: 0.3px; }
+.badge-shorts { background: #ffebee; color: #e53935; }
+.badge-regular { background: #e8f5e9; color: #388e3c; }
+.sub-tabs { display: flex; gap: 0; background: #f0f0f0; border-radius: 10px; padding: 3px; margin-bottom: 16px; width: fit-content; }
+.sub-tab { padding: 6px 14px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; color: #666; transition: all 0.15s; }
+.sub-tab.active { background: #fff; color: #111; box-shadow: 0 1px 4px rgba(0,0,0,0.12); }
+.add-row { display: flex; gap: 8px; align-items: center; margin-top: 4px; }
+.add-row input { flex: 1; }
+.chip-list { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.chip-item { display: flex; align-items: center; gap: 6px; background: #f2f2f2; border-radius: 16px; padding: 6px 12px; }
+.chip-item span { font-size: 13px; font-weight: 500; color: #222; }
+.chip-item .chip-del { cursor: pointer; font-size: 14px; color: #aaa; line-height: 1; }
+.chip-item .chip-del:hover { color: #e53935; }
+.section-gap { height: 24px; }
+.drag-handle { cursor: grab; color: #bbb; font-size: 18px; padding: 0 6px; }
+.drag-handle:active { cursor: grabbing; }
+.color-preview { width: 24px; height: 24px; border-radius: 50%; border: 1.5px solid #ddd; display: inline-block; vertical-align: middle; margin-right: 6px; flex-shrink: 0; }
+.avatar-row { display: flex; align-items: flex-start; gap: 10px; }
+.avatar-side { flex: 1; }
+.info-box { background: #fff8e1; border: 1.5px solid #ffe082; border-radius: 8px; padding: 10px 14px; font-size: 12px; color: #795548; line-height: 1.6; margin-bottom: 14px; }
+.save-toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: #222; color: #fff; padding: 10px 24px; border-radius: 20px; font-size: 13px; font-weight: 600; z-index: 999; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+.save-toast.show { opacity: 1; }
+hr.divider { border: none; border-top: 1px solid #eee; margin: 14px 0; }
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <h1>🎬 YouTube AI 관리자 도구</h1>
+  <div class="actions">
+    <button class="btn btn-secondary btn-sm" onclick="exportConfig()">내보내기</button>
+    <button class="btn btn-secondary btn-sm" onclick="importConfig()">가져오기</button>
+    <button class="btn btn-primary" onclick="saveAll()">저장 적용</button>
+  </div>
+</div>
+
+<div class="tabs" id="main-tabs">
+  <div class="tab active" onclick="switchTab('ai-thumb')">AI 썸네일</div>
+  <div class="tab" onclick="switchTab('creator')">크리에이터 카드</div>
+  <div class="tab" onclick="switchTab('chapters')">챕터 설정</div>
+  <div class="tab" onclick="switchTab('chips')">재검색 키워드</div>
+  <div class="tab" onclick="switchTab('search-results')">검색결과 피드</div>
+  <div class="tab" onclick="switchTab('source-videos')">출처 영상</div>
+</div>
+
+<!-- ==================== AI 썸네일 ==================== -->
+<div class="panel active" id="panel-ai-thumb">
+  <div class="info-box">S2a 화면의 AI 요약 영상 썸네일 이미지입니다. 이미지를 업로드하면 그라데이션 배경을 대체합니다. 제목은 사용자 검색어에 따라 자동으로 변경됩니다.</div>
+  <div class="card">
+    <div class="card-title" style="margin-bottom:12px;">AI 요약 영상 썸네일</div>
+    <div class="img-upload-area" onclick="document.getElementById('ai-thumb-file').click()">
+      <img id="ai-thumb-preview" style="display:none;">
+      <p id="ai-thumb-placeholder">클릭하여 이미지 업로드<br><span style="font-size:11px;color:#bbb;">권장: 362×200px, JPG/PNG</span></p>
+      <input type="file" id="ai-thumb-file" accept="image/*" onchange="handleAIThumbUpload(this)">
+    </div>
+    <div style="margin-top:10px;display:flex;gap:8px;">
+      <button class="btn btn-ghost btn-sm" onclick="clearAIThumb()">이미지 제거 (그라데이션으로 복원)</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 크리에이터 카드 ==================== -->
+<div class="panel" id="panel-creator">
+  <div class="info-box">영상 재생 시간대별로 표시될 크리에이터 카드를 설정합니다. 시작~종료 초(秒) 범위에 해당 채널 정보가 나타납니다. 채널명/아이콘 터치 시 링크로 이동합니다.</div>
+  <div class="sub-tabs">
+    <div class="sub-tab active" onclick="switchCreatorVideo('v1',this)">영상1 (30초)</div>
+    <div class="sub-tab" onclick="switchCreatorVideo('v2',this)">영상2 (20초)</div>
+  </div>
+  <div id="creator-list"></div>
+  <button class="btn btn-primary btn-sm" onclick="addCreatorCard()" style="margin-top:4px;">+ 카드 추가</button>
+</div>
+
+<!-- ==================== 챕터 설정 ==================== -->
+<div class="panel" id="panel-chapters">
+  <div class="info-box">챕터 마커를 추가하면 타임라인에 흰색 막대로 표시됩니다. 사용자가 타임라인을 길게 누르면 해당 시간대의 크리에이터 카드 정보와 챕터명이 팝업으로 표시됩니다.</div>
+  <div class="sub-tabs">
+    <div class="sub-tab active" onclick="switchChapterVideo('v1',this)">영상1 (30초)</div>
+    <div class="sub-tab" onclick="switchChapterVideo('v2',this)">영상2 (20초)</div>
+  </div>
+  <div id="chapter-list"></div>
+  <div class="card" style="margin-top:8px;">
+    <div class="card-title" style="margin-bottom:10px;">챕터 추가</div>
+    <div class="row-2">
+      <div><label>시간 (초)</label><input type="number" id="new-chapter-time" min="0" placeholder="예: 5"></div>
+      <div><label>챕터 이름</label><input type="text" id="new-chapter-label" placeholder="예: 제주도 소개"></div>
+    </div>
+    <button class="btn btn-primary btn-sm" onclick="addChapter()" style="margin-top:10px;">+ 챕터 추가</button>
+  </div>
+</div>
+
+<!-- ==================== 재검색 키워드 ==================== -->
+<div class="panel" id="panel-chips">
+  <div class="info-box">S5 화면에서 재검색 시트의 키워드 칩 목록입니다. 사용자가 칩을 탭하면 검색창에 자동으로 입력됩니다.</div>
+  <div class="card">
+    <div class="card-title" style="margin-bottom:12px;">키워드 칩 목록</div>
+    <div class="chip-list" id="chips-list"></div>
+    <div class="add-row">
+      <input type="text" id="new-chip-input" placeholder="새 키워드 입력..." onkeydown="if(event.key==='Enter')addChip()">
+      <button class="btn btn-primary btn-sm" onclick="addChip()">추가</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 검색결과 피드 (S2a) ==================== -->
+<div class="panel" id="panel-search-results">
+  <div class="info-box">S2a 화면의 AI 요약 영상 아래 나오는 쇼츠/일반 영상 피드입니다. 연속된 Shorts 2개는 나란히 배치됩니다.</div>
+  <div id="search-results-list"></div>
+  <div style="margin-top:4px;display:flex;gap:8px;">
+    <button class="btn btn-primary btn-sm" onclick="addSearchItem('shorts')">+ Shorts 추가</button>
+    <button class="btn btn-primary btn-sm" onclick="addSearchItem('regular')">+ 일반영상 추가</button>
+  </div>
+</div>
+
+<!-- ==================== 출처 영상 (S6) ==================== -->
+<div class="panel" id="panel-source-videos">
+  <div class="info-box">S6 화면의 출처 영상 목록입니다. 썸네일/채널명/제목 클릭 시 채널 링크로 이동합니다.</div>
+  <div id="source-videos-list"></div>
+  <button class="btn btn-primary btn-sm" onclick="addSourceVideo()" style="margin-top:4px;">+ 출처 영상 추가</button>
+</div>
+
+<div class="save-toast" id="save-toast">✓ 저장되었습니다</div>
+<input type="file" id="import-file" accept=".json" style="display:none;" onchange="handleImport(this)">
+
+<script>
+const CONFIG_KEY = 'ytAIConfig';
+
+const DEFAULT_CONFIG = {
+  version: 1,
+  aiThumbnail: null,
+  videos: {
+    v1: {
+      creatorCards: [{
+        id: 1, startTime: 0, endTime: 999,
+        avatarImage: null, avatarColor: 'linear-gradient(135deg,#1565C0,#42a5f5)', avatarText: '유',
+        name: '유정 ✓', subtitle: '(외 2채널 참여)', subs: '구독자 120만명',
+        link: 'https://www.youtube.com/@yoojung_travel'
+      }],
+      chapters: []
+    },
+    v2: {
+      creatorCards: [{
+        id: 1, startTime: 0, endTime: 999,
+        avatarImage: null, avatarColor: 'linear-gradient(135deg,#1565C0,#42a5f5)', avatarText: '유',
+        name: '유정 ✓', subtitle: '', subs: '구독자 120만명',
+        link: 'https://www.youtube.com/@yoojung_travel'
+      }],
+      chapters: []
+    }
+  },
+  chips: ['더 다양하게', '더 길게', '더 짧게', '더 빠르게'],
+  sourceVideos: [
+    { id:1, thumbnailImage:null, thumbnailGradient:'green', thumbnailEmoji:'🌿', thumbnailLabel:'제주도 여행', duration:'18:29', channelAvatarImage:null, channelAvatarColor:'#1565C0', channelAvatarText:'유', channelName:'유정', channelLink:'https://www.youtube.com/@yoojung_travel', title:'고등학교 친구들과 3박 4일 제주도 여행기', details:'식당: 다람쥐 쇼쿠지 / 액티비티: 감귤 따기 / 숙소: 애월 독채 펜션 넷', subscribed:false },
+    { id:2, thumbnailImage:null, thumbnailGradient:'blue', thumbnailEmoji:'🌊', thumbnailLabel:'부산 여행', duration:'20:05', channelAvatarImage:null, channelAvatarColor:'#e65100', channelAvatarText:'찰', channelName:'찰스엔터', channelLink:'https://www.youtube.com/@charlsenter', title:'부산 여행 브이로그', details:'식당: 이재모 피자 술집 후기 / 액티비티: 부산국제영화제 / 숙소: 광안리 호텔', subscribed:false },
+    { id:3, thumbnailImage:null, thumbnailGradient:'purple-teal', thumbnailEmoji:'🗺️', thumbnailLabel:'비교 여행', duration:'15:32', channelAvatarImage:null, channelAvatarColor:'#00796B', channelAvatarText:'제', channelName:'제주에디 Jeju Eddy', channelLink:'https://www.youtube.com/@jejueddy', title:'부산 vs. 제주도 완전 비교', details:'식당: 해녀 밥상 / 액티비티: 한라산 등반 / 숙소: 제주 한옥 게스트하우스', subscribed:false },
+    { id:4, thumbnailImage:null, thumbnailGradient:'rose', thumbnailEmoji:'🍊', thumbnailLabel:'제주 맛집', duration:'14:45', channelAvatarImage:null, channelAvatarColor:'#b91d73', channelAvatarText:'소', channelName:'소희맨션soheemansion', channelLink:'https://www.youtube.com/@soheemansion', title:'제주도 숨은 맛집 TOP10 (현지인 추천)', details:'식당: 쥐치조림 노포 / 위치: 구도심 골목 / 방문: 2024.11', subscribed:true },
+    { id:5, thumbnailImage:null, thumbnailGradient:'coral', thumbnailEmoji:'✈️', thumbnailLabel:'어디가 좋을까?', duration:'22:10', channelAvatarImage:null, channelAvatarColor:'#f09819', channelAvatarText:'여', channelName:'여행ON', channelLink:'https://www.youtube.com/@traveon', title:'제주 vs 부산 어디가 더 좋아? 솔직 비교', details:'교통비 / 숙박비 / 먹거리 / 액티비티 전반 비교', subscribed:false },
+    { id:6, thumbnailImage:null, thumbnailGradient:'dark-blue', thumbnailEmoji:'🏙️', thumbnailLabel:'부산 가이드', duration:'31:22', channelAvatarImage:null, channelAvatarColor:'#2c5364', channelAvatarText:'부', channelName:'부산여행TV', channelLink:'https://www.youtube.com/@busantraveltv', title:'부산 5박 6일 완벽 가이드 (숙소·맛집·관광)', details:'숙소: 해운대 호텔 / 관광: 감천문화마을 / 맛집: 밀면 골목', subscribed:false },
+    { id:7, thumbnailImage:null, thumbnailGradient:'mint', thumbnailEmoji:'🍽️', thumbnailLabel:'현지 맛집', duration:'16:54', channelAvatarImage:null, channelAvatarColor:'#96c93d', channelAvatarText:'카', channelName:'카라쿤', channelLink:'https://www.youtube.com/@karakun', title:'제주도 현지인만 아는 찐맛집 추천 7곳', details:'식당: 순두부찌개 노포 / 위치: 제주시 / 가격: 1인 8천원~', subscribed:false },
+    { id:8, thumbnailImage:null, thumbnailGradient:'food', thumbnailEmoji:'🍖', thumbnailLabel:'부산 먹방', duration:'25:30', channelAvatarImage:null, channelAvatarColor:'#D2691E', channelAvatarText:'먹', channelName:'먹방왕', channelLink:'https://www.youtube.com/@mukbangwang', title:'부산 먹부림 5일 — 씨앗호떡부터 돼지국밥까지', details:'식당: 남포동 돼지국밥 / 가격: 1만원대 / 웨이팅: 30분', subscribed:false }
+  ],
+  searchResults: [
+    { type:'shorts', id:'sr1', thumbnailImage:null, thumbnailGradient:'orange', thumbnailEmoji:'🍊', title:'제주 흑돼지 맛집 솔직 후기 (현지인 픽)', channel:'ootb STUDIO' },
+    { type:'shorts', id:'sr2', thumbnailImage:null, thumbnailGradient:'teal', thumbnailEmoji:'🌊', title:'제주 뷰 맛집 TOP3 30초 요약', channel:'오밍스' },
+    { type:'regular', id:'sr3', thumbnailImage:null, thumbnailGradient:'palm', thumbnailEmoji:'🌴', duration:'18:29', title:'제주도민이 추천하는 찐 맛집 코스 (성산·서귀포 편)', channel:'서이두 · 조회수 241만 · 2일 전' },
+    { type:'shorts', id:'sr4', thumbnailImage:null, thumbnailGradient:'food', thumbnailEmoji:'🍜', title:'제주 숨은 국수 맛집 발굴', channel:'현주zip' },
+    { type:'shorts', id:'sr5', thumbnailImage:null, thumbnailGradient:'rose', thumbnailEmoji:'🫧', title:'제주 카페 인생샷 명소 3곳', channel:'소희맨션' },
+    { type:'regular', id:'sr6', thumbnailImage:null, thumbnailGradient:'blue', thumbnailEmoji:'✈️', duration:'22:10', title:'제주 여행 2박 3일 완전 정복 (맛집+숙소+코스 총정리)', channel:'유정 · 조회수 87만 · 5일 전' }
+  ]
+};
+
+let config = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
+let currentCreatorVideoKey = 'v1';
+let currentChapterVideoKey = 'v1';
+let nextId = 100;
+
+function loadConfig() {
+  try {
+    const saved = localStorage.getItem(CONFIG_KEY);
+    if (saved) config = JSON.parse(saved);
+    else config = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
+  } catch(e) {
+    config = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
+  }
+}
+
+function saveAll() {
+  collectAllForms();
+  try {
+    localStorage.setItem(CONFIG_KEY, JSON.stringify(config));
+    showSaveToast();
+  } catch(e) {
+    alert('저장 실패: ' + e.message + '\n(이미지 크기가 너무 클 수 있습니다)');
+  }
+}
+
+function showSaveToast() {
+  const t = document.getElementById('save-toast');
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+function exportConfig() {
+  collectAllForms();
+  const blob = new Blob([JSON.stringify(config, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'yt-ai-config.json';
+  a.click();
+}
+
+function importConfig() {
+  document.getElementById('import-file').click();
+}
+
+function handleImport(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      config = JSON.parse(e.target.result);
+      localStorage.setItem(CONFIG_KEY, JSON.stringify(config));
+      renderAll();
+      showSaveToast();
+    } catch(err) {
+      alert('JSON 파싱 실패: ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+  input.value = '';
+}
+
+// ==================== TAB SWITCHING ====================
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach((t, i) => {
+    const panels = ['ai-thumb','creator','chapters','chips','search-results','source-videos'];
+    t.classList.toggle('active', panels[i] === name);
+  });
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-' + name).classList.add('active');
+}
+
+function switchCreatorVideo(key, el) {
+  currentCreatorVideoKey = key;
+  el.parentElement.querySelectorAll('.sub-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  renderCreatorCards();
+}
+
+function switchChapterVideo(key, el) {
+  currentChapterVideoKey = key;
+  el.parentElement.querySelectorAll('.sub-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  renderChapters();
+}
+
+// ==================== AI THUMBNAIL ====================
+function handleAIThumbUpload(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    config.aiThumbnail = e.target.result;
+    const img = document.getElementById('ai-thumb-preview');
+    const placeholder = document.getElementById('ai-thumb-placeholder');
+    img.src = e.target.result;
+    img.style.display = 'block';
+    placeholder.style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+  input.value = '';
+}
+
+function clearAIThumb() {
+  config.aiThumbnail = null;
+  const img = document.getElementById('ai-thumb-preview');
+  const placeholder = document.getElementById('ai-thumb-placeholder');
+  img.src = '';
+  img.style.display = 'none';
+  placeholder.style.display = 'block';
+}
+
+function renderAIThumb() {
+  const img = document.getElementById('ai-thumb-preview');
+  const placeholder = document.getElementById('ai-thumb-placeholder');
+  if (config.aiThumbnail) {
+    img.src = config.aiThumbnail;
+    img.style.display = 'block';
+    placeholder.style.display = 'none';
+  } else {
+    img.style.display = 'none';
+    placeholder.style.display = 'block';
+  }
+}
+
+// ==================== CREATOR CARDS ====================
+function renderCreatorCards() {
+  const list = document.getElementById('creator-list');
+  if (!list) return;
+  const cards = ((config.videos || {})[currentCreatorVideoKey] || {}).creatorCards || [];
+  list.innerHTML = '';
+  cards.forEach((card, idx) => {
+    const div = document.createElement('div');
+    div.className = 'item-row';
+    div.setAttribute('data-idx', idx);
+    div.innerHTML = `
+      <div class="item-row-header" onclick="toggleItemBody(this)">
+        <div>
+          <div class="item-row-title">${escHtml(card.name || '(이름없음)')} <span style="font-size:11px;color:#888;">${escHtml(card.subtitle||'')}</span></div>
+          <div class="item-row-sub">${card.startTime}초 ~ ${card.endTime}초 · ${escHtml(card.subs||'')}</div>
+        </div>
+        <div class="item-actions">
+          <button class="btn btn-danger btn-sm" onclick="deleteCreatorCard(${idx});event.stopPropagation();">삭제</button>
+          <span style="color:#bbb;font-size:18px;padding-left:4px;">▾</span>
+        </div>
+      </div>
+      <div class="item-row-body">
+        <div class="row-2">
+          <div><label>시작 (초)</label><input type="number" value="${card.startTime}" onchange="config.videos['${currentCreatorVideoKey}'].creatorCards[${idx}].startTime=+this.value"></div>
+          <div><label>종료 (초)</label><input type="number" value="${card.endTime}" onchange="config.videos['${currentCreatorVideoKey}'].creatorCards[${idx}].endTime=+this.value"></div>
+        </div>
+        <hr class="divider">
+        <div style="font-size:12px;font-weight:700;color:#555;margin-bottom:8px;">아바타</div>
+        <div class="avatar-row">
+          <div class="avatar-side">
+            <label>아바타 이미지 (선택)</label>
+            <div class="img-upload-area" onclick="document.getElementById('cc-avatar-${idx}').click()" style="padding:10px;">
+              <img id="cc-avatar-preview-${idx}" src="${card.avatarImage||''}" style="${card.avatarImage?'display:block;':'display:none;'}max-height:60px;">
+              <p id="cc-avatar-placeholder-${idx}" style="${card.avatarImage?'display:none;':''}font-size:11px;">클릭하여 이미지 업로드</p>
+              <input type="file" id="cc-avatar-${idx}" accept="image/*" onchange="handleAvatarUpload(this,${idx})">
+            </div>
+            ${card.avatarImage ? `<button class="btn btn-ghost btn-sm" onclick="clearAvatar(${idx})" style="margin-top:6px;">이미지 제거</button>` : ''}
+          </div>
+          <div class="avatar-side">
+            <label>아바타 색상 (이미지 없을 때)</label>
+            <input type="text" value="${escHtml(card.avatarColor||'')}" placeholder="예: linear-gradient(135deg,#1565C0,#42a5f5)" onchange="config.videos['${currentCreatorVideoKey}'].creatorCards[${idx}].avatarColor=this.value">
+            <label>아바타 글자 (이미지 없을 때)</label>
+            <input type="text" value="${escHtml(card.avatarText||'')}" maxlength="2" onchange="config.videos['${currentCreatorVideoKey}'].creatorCards[${idx}].avatarText=this.value">
+          </div>
+        </div>
+        <hr class="divider">
+        <label>채널명</label>
+        <input type="text" value="${escHtml(card.name||'')}" onchange="config.videos['${currentCreatorVideoKey}'].creatorCards[${idx}].name=this.value">
+        <label>부제목 (예: 외 2채널 참여)</label>
+        <input type="text" value="${escHtml(card.subtitle||'')}" onchange="config.videos['${currentCreatorVideoKey}'].creatorCards[${idx}].subtitle=this.value">
+        <label>구독자 정보</label>
+        <input type="text" value="${escHtml(card.subs||'')}" onchange="config.videos['${currentCreatorVideoKey}'].creatorCards[${idx}].subs=this.value">
+        <label>채널 링크 (터치 시 이동)</label>
+        <input type="url" value="${escHtml(card.link||'')}" placeholder="https://www.youtube.com/@channel" onchange="config.videos['${currentCreatorVideoKey}'].creatorCards[${idx}].link=this.value">
+      </div>`;
+    list.appendChild(div);
+  });
+}
+
+function toggleItemBody(header) {
+  const body = header.nextElementSibling;
+  if (body) body.classList.toggle('open');
+}
+
+function addCreatorCard() {
+  if (!config.videos[currentCreatorVideoKey]) config.videos[currentCreatorVideoKey] = { creatorCards: [], chapters: [] };
+  if (!config.videos[currentCreatorVideoKey].creatorCards) config.videos[currentCreatorVideoKey].creatorCards = [];
+  config.videos[currentCreatorVideoKey].creatorCards.push({
+    id: nextId++, startTime: 0, endTime: 999,
+    avatarImage: null, avatarColor: 'linear-gradient(135deg,#667eea,#764ba2)', avatarText: '채',
+    name: '새 채널', subtitle: '', subs: '구독자 0명', link: ''
+  });
+  renderCreatorCards();
+}
+
+function deleteCreatorCard(idx) {
+  if (!confirm('삭제하시겠습니까?')) return;
+  config.videos[currentCreatorVideoKey].creatorCards.splice(idx, 1);
+  renderCreatorCards();
+}
+
+function handleAvatarUpload(input, idx) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    config.videos[currentCreatorVideoKey].creatorCards[idx].avatarImage = e.target.result;
+    renderCreatorCards();
+  };
+  reader.readAsDataURL(file);
+  input.value = '';
+}
+
+function clearAvatar(idx) {
+  config.videos[currentCreatorVideoKey].creatorCards[idx].avatarImage = null;
+  renderCreatorCards();
+}
+
+// ==================== CHAPTERS ====================
+function renderChapters() {
+  const list = document.getElementById('chapter-list');
+  if (!list) return;
+  const chapters = ((config.videos || {})[currentChapterVideoKey] || {}).chapters || [];
+  if (chapters.length === 0) {
+    list.innerHTML = '<div class="card" style="text-align:center;color:#888;padding:24px;">등록된 챕터가 없습니다.</div>';
+    return;
+  }
+  list.innerHTML = chapters.map((ch, idx) => `
+    <div class="card" style="padding:12px 16px;display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+      <div style="flex:0 0 70px;"><label style="margin:0;">시간(초)</label><input type="number" value="${ch.time}" min="0" onchange="config.videos['${currentChapterVideoKey}'].chapters[${idx}].time=+this.value" style="margin-top:4px;"></div>
+      <div style="flex:1;"><label style="margin:0;">챕터명</label><input type="text" value="${escHtml(ch.label||'')}" onchange="config.videos['${currentChapterVideoKey}'].chapters[${idx}].label=this.value" style="margin-top:4px;"></div>
+      <div style="flex-shrink:0;padding-top:18px;"><button class="btn btn-danger btn-sm" onclick="deleteChapter(${idx})">삭제</button></div>
+    </div>`).join('');
+}
+
+function addChapter() {
+  const time = parseFloat(document.getElementById('new-chapter-time').value);
+  const label = document.getElementById('new-chapter-label').value.trim();
+  if (isNaN(time) || time < 0) { alert('올바른 시간(초)을 입력하세요.'); return; }
+  if (!config.videos[currentChapterVideoKey]) config.videos[currentChapterVideoKey] = { creatorCards: [], chapters: [] };
+  if (!config.videos[currentChapterVideoKey].chapters) config.videos[currentChapterVideoKey].chapters = [];
+  config.videos[currentChapterVideoKey].chapters.push({ id: nextId++, time, label: label || '챕터' });
+  config.videos[currentChapterVideoKey].chapters.sort((a,b) => a.time - b.time);
+  document.getElementById('new-chapter-time').value = '';
+  document.getElementById('new-chapter-label').value = '';
+  renderChapters();
+}
+
+function deleteChapter(idx) {
+  config.videos[currentChapterVideoKey].chapters.splice(idx, 1);
+  renderChapters();
+}
+
+// ==================== CHIPS ====================
+function renderChips() {
+  const list = document.getElementById('chips-list');
+  if (!list) return;
+  const chips = config.chips || [];
+  list.innerHTML = chips.map((c, i) => `
+    <div class="chip-item">
+      <span contenteditable="true" onblur="config.chips[${i}]=this.textContent.trim()">${escHtml(c)}</span>
+      <span class="chip-del" onclick="deleteChip(${i})" title="삭제">×</span>
+    </div>`).join('');
+}
+
+function addChip() {
+  const inp = document.getElementById('new-chip-input');
+  const val = inp.value.trim();
+  if (!val) return;
+  if (!config.chips) config.chips = [];
+  config.chips.push(val);
+  inp.value = '';
+  renderChips();
+}
+
+function deleteChip(idx) {
+  config.chips.splice(idx, 1);
+  renderChips();
+}
+
+// ==================== SEARCH RESULTS (S2a) ====================
+function renderSearchResults() {
+  const list = document.getElementById('search-results-list');
+  if (!list) return;
+  const items = config.searchResults || [];
+  list.innerHTML = '';
+  items.forEach((item, idx) => {
+    const badge = item.type === 'shorts'
+      ? '<span class="badge badge-shorts">Shorts</span>'
+      : '<span class="badge badge-regular">일반</span>';
+    const div = document.createElement('div');
+    div.className = 'item-row';
+    div.innerHTML = `
+      <div class="item-row-header" onclick="toggleItemBody(this)">
+        <div style="flex:1;min-width:0;">
+          <div class="item-row-title" style="display:flex;align-items:center;gap:6px;">${badge} ${escHtml(item.title||'(제목없음)')}</div>
+          <div class="item-row-sub">${escHtml(item.channel||'')}</div>
+        </div>
+        <div class="item-actions">
+          <button class="btn btn-ghost btn-sm" onclick="moveSearchItem(${idx},-1);event.stopPropagation();">↑</button>
+          <button class="btn btn-ghost btn-sm" onclick="moveSearchItem(${idx},1);event.stopPropagation();">↓</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteSearchItem(${idx});event.stopPropagation();">삭제</button>
+          <span style="color:#bbb;font-size:18px;padding-left:4px;">▾</span>
+        </div>
+      </div>
+      <div class="item-row-body">
+        <div class="row-2">
+          <div>
+            <label>유형</label>
+            <select onchange="config.searchResults[${idx}].type=this.value">
+              <option value="shorts" ${item.type==='shorts'?'selected':''}>Shorts</option>
+              <option value="regular" ${item.type==='regular'?'selected':''}>일반 영상</option>
+            </select>
+          </div>
+          ${item.type==='regular' ? `<div><label>재생시간</label><input type="text" value="${escHtml(item.duration||'')}" placeholder="예: 18:29" onchange="config.searchResults[${idx}].duration=this.value"></div>` : '<div></div>'}
+        </div>
+        <label>썸네일 이미지 (선택)</label>
+        <div class="img-upload-area" onclick="document.getElementById('sr-thumb-${idx}').click()" style="padding:10px;">
+          <img id="sr-thumb-preview-${idx}" src="${item.thumbnailImage||''}" style="${item.thumbnailImage?'display:block;':'display:none;'}max-height:80px;">
+          <p id="sr-thumb-placeholder-${idx}" style="${item.thumbnailImage?'display:none;':''}font-size:11px;">클릭하여 이미지 업로드</p>
+          <input type="file" id="sr-thumb-${idx}" accept="image/*" onchange="handleSRThumb(this,${idx})">
+        </div>
+        ${item.thumbnailImage ? `<button class="btn btn-ghost btn-sm" onclick="clearSRThumb(${idx})" style="margin-top:4px;">이미지 제거</button>` : ''}
+        <div class="row-3" style="margin-top:6px;">
+          <div><label>그라데이션 클래스</label><input type="text" value="${escHtml(item.thumbnailGradient||'')}" placeholder="예: orange" onchange="config.searchResults[${idx}].thumbnailGradient=this.value"></div>
+          <div><label>이모지</label><input type="text" value="${escHtml(item.thumbnailEmoji||'')}" onchange="config.searchResults[${idx}].thumbnailEmoji=this.value"></div>
+        </div>
+        <label>제목</label>
+        <input type="text" value="${escHtml(item.title||'')}" onchange="config.searchResults[${idx}].title=this.value">
+        <label>채널명</label>
+        <input type="text" value="${escHtml(item.channel||'')}" onchange="config.searchResults[${idx}].channel=this.value">
+      </div>`;
+    list.appendChild(div);
+  });
+}
+
+function addSearchItem(type) {
+  if (!config.searchResults) config.searchResults = [];
+  config.searchResults.push({ type, id: 'sr'+nextId++, thumbnailImage:null, thumbnailGradient:'blue', thumbnailEmoji:'🎬', title:'새 영상', channel:'채널명', duration: type==='regular'?'10:00':undefined });
+  renderSearchResults();
+}
+
+function deleteSearchItem(idx) {
+  if (!confirm('삭제하시겠습니까?')) return;
+  config.searchResults.splice(idx, 1);
+  renderSearchResults();
+}
+
+function moveSearchItem(idx, dir) {
+  const arr = config.searchResults;
+  const newIdx = idx + dir;
+  if (newIdx < 0 || newIdx >= arr.length) return;
+  [arr[idx], arr[newIdx]] = [arr[newIdx], arr[idx]];
+  renderSearchResults();
+}
+
+function handleSRThumb(input, idx) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    config.searchResults[idx].thumbnailImage = e.target.result;
+    renderSearchResults();
+  };
+  reader.readAsDataURL(file);
+  input.value = '';
+}
+
+function clearSRThumb(idx) {
+  config.searchResults[idx].thumbnailImage = null;
+  renderSearchResults();
+}
+
+// ==================== SOURCE VIDEOS (S6) ====================
+function renderSourceVideos() {
+  const list = document.getElementById('source-videos-list');
+  if (!list) return;
+  const items = config.sourceVideos || [];
+  list.innerHTML = '';
+  items.forEach((item, idx) => {
+    const div = document.createElement('div');
+    div.className = 'item-row';
+    div.innerHTML = `
+      <div class="item-row-header" onclick="toggleItemBody(this)">
+        <div style="flex:1;min-width:0;">
+          <div class="item-row-title">${escHtml(item.title||'(제목없음)')}</div>
+          <div class="item-row-sub">${escHtml(item.channelName||'')} · ${escHtml(item.duration||'')}</div>
+        </div>
+        <div class="item-actions">
+          <button class="btn btn-ghost btn-sm" onclick="moveSV(${idx},-1);event.stopPropagation();">↑</button>
+          <button class="btn btn-ghost btn-sm" onclick="moveSV(${idx},1);event.stopPropagation();">↓</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteSV(${idx});event.stopPropagation();">삭제</button>
+          <span style="color:#bbb;font-size:18px;padding-left:4px;">▾</span>
+        </div>
+      </div>
+      <div class="item-row-body">
+        <div style="font-size:12px;font-weight:700;color:#555;margin-bottom:8px;">썸네일</div>
+        <div class="img-upload-area" onclick="document.getElementById('sv-thumb-${idx}').click()" style="padding:10px;">
+          <img id="sv-thumb-preview-${idx}" src="${item.thumbnailImage||''}" style="${item.thumbnailImage?'display:block;':'display:none;'}max-height:80px;">
+          <p id="sv-thumb-placeholder-${idx}" style="${item.thumbnailImage?'display:none;':''}font-size:11px;">클릭하여 이미지 업로드</p>
+          <input type="file" id="sv-thumb-${idx}" accept="image/*" onchange="handleSVThumb(this,${idx})">
+        </div>
+        ${item.thumbnailImage ? `<button class="btn btn-ghost btn-sm" onclick="clearSVThumb(${idx})" style="margin-top:4px;">이미지 제거</button>` : ''}
+        <div class="row-3" style="margin-top:8px;">
+          <div><label>그라데이션 클래스</label><input type="text" value="${escHtml(item.thumbnailGradient||'')}" placeholder="예: green" onchange="config.sourceVideos[${idx}].thumbnailGradient=this.value"></div>
+          <div><label>이모지</label><input type="text" value="${escHtml(item.thumbnailEmoji||'')}" onchange="config.sourceVideos[${idx}].thumbnailEmoji=this.value"></div>
+          <div><label>레이블</label><input type="text" value="${escHtml(item.thumbnailLabel||'')}" onchange="config.sourceVideos[${idx}].thumbnailLabel=this.value"></div>
+        </div>
+        <label>재생시간</label>
+        <input type="text" value="${escHtml(item.duration||'')}" placeholder="예: 18:29" onchange="config.sourceVideos[${idx}].duration=this.value">
+        <hr class="divider">
+        <div style="font-size:12px;font-weight:700;color:#555;margin-bottom:8px;">채널 정보</div>
+        <label>채널 아이콘 이미지 (선택)</label>
+        <div class="img-upload-area" onclick="document.getElementById('sv-avatar-${idx}').click()" style="padding:10px;">
+          <img id="sv-avatar-preview-${idx}" src="${item.channelAvatarImage||''}" style="${item.channelAvatarImage?'display:block;':'display:none;'}max-height:50px;max-width:50px;border-radius:50%;">
+          <p id="sv-avatar-placeholder-${idx}" style="${item.channelAvatarImage?'display:none;':''}font-size:11px;">클릭하여 이미지 업로드</p>
+          <input type="file" id="sv-avatar-${idx}" accept="image/*" onchange="handleSVAvatar(this,${idx})">
+        </div>
+        ${item.channelAvatarImage ? `<button class="btn btn-ghost btn-sm" onclick="clearSVAvatar(${idx})" style="margin-top:4px;">이미지 제거</button>` : ''}
+        <div class="row-2" style="margin-top:6px;">
+          <div><label>아바타 배경색</label><input type="text" value="${escHtml(item.channelAvatarColor||'')}" placeholder="#1565C0" onchange="config.sourceVideos[${idx}].channelAvatarColor=this.value"></div>
+          <div><label>아바타 글자</label><input type="text" value="${escHtml(item.channelAvatarText||'')}" maxlength="2" onchange="config.sourceVideos[${idx}].channelAvatarText=this.value"></div>
+        </div>
+        <label>채널명</label>
+        <input type="text" value="${escHtml(item.channelName||'')}" onchange="config.sourceVideos[${idx}].channelName=this.value">
+        <label>채널 링크 (클릭 시 이동)</label>
+        <input type="url" value="${escHtml(item.channelLink||'')}" placeholder="https://www.youtube.com/@channel" onchange="config.sourceVideos[${idx}].channelLink=this.value">
+        <hr class="divider">
+        <label>영상 제목</label>
+        <input type="text" value="${escHtml(item.title||'')}" onchange="config.sourceVideos[${idx}].title=this.value">
+        <label>설명/부가정보</label>
+        <textarea onchange="config.sourceVideos[${idx}].details=this.value">${escHtml(item.details||'')}</textarea>
+      </div>`;
+    list.appendChild(div);
+  });
+}
+
+function addSourceVideo() {
+  if (!config.sourceVideos) config.sourceVideos = [];
+  config.sourceVideos.push({ id:nextId++, thumbnailImage:null, thumbnailGradient:'blue', thumbnailEmoji:'🎬', thumbnailLabel:'새 영상', duration:'00:00', channelAvatarImage:null, channelAvatarColor:'#555', channelAvatarText:'채', channelName:'새 채널', channelLink:'', title:'새 출처 영상', details:'', subscribed:false });
+  renderSourceVideos();
+}
+
+function deleteSV(idx) {
+  if (!confirm('삭제하시겠습니까?')) return;
+  config.sourceVideos.splice(idx, 1);
+  renderSourceVideos();
+}
+
+function moveSV(idx, dir) {
+  const arr = config.sourceVideos;
+  const newIdx = idx + dir;
+  if (newIdx < 0 || newIdx >= arr.length) return;
+  [arr[idx], arr[newIdx]] = [arr[newIdx], arr[idx]];
+  renderSourceVideos();
+}
+
+function handleSVThumb(input, idx) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => { config.sourceVideos[idx].thumbnailImage = e.target.result; renderSourceVideos(); };
+  reader.readAsDataURL(file);
+  input.value = '';
+}
+
+function clearSVThumb(idx) {
+  config.sourceVideos[idx].thumbnailImage = null;
+  renderSourceVideos();
+}
+
+function handleSVAvatar(input, idx) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => { config.sourceVideos[idx].channelAvatarImage = e.target.result; renderSourceVideos(); };
+  reader.readAsDataURL(file);
+  input.value = '';
+}
+
+function clearSVAvatar(idx) {
+  config.sourceVideos[idx].channelAvatarImage = null;
+  renderSourceVideos();
+}
+
+// ==================== FORM COLLECTION ====================
+function collectAllForms() {
+  // All inline onchange handlers update config directly; this is a no-op
+}
+
+// ==================== UTILS ====================
+function escHtml(str) {
+  if (!str) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function renderAll() {
+  renderAIThumb();
+  renderCreatorCards();
+  renderChapters();
+  renderChips();
+  renderSearchResults();
+  renderSourceVideos();
+}
+
+// ==================== INIT ====================
+loadConfig();
+renderAll();
+</script>
+</body>
+</html>
