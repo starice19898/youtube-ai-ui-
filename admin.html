@@ -94,6 +94,7 @@ hr.divider { border: none; border-top: 1px solid #eee; margin: 14px 0; }
   <div class="tab" onclick="switchTab('creator')">크리에이터 카드</div>
   <div class="tab" onclick="switchTab('chapters')">챕터 설정</div>
   <div class="tab" onclick="switchTab('chips')">재검색 키워드</div>
+  <div class="tab" onclick="switchTab('s2a-channels')">S2a 채널</div>
   <div class="tab" onclick="switchTab('search-results')">검색결과 피드</div>
   <div class="tab" onclick="switchTab('source-videos')">출처 영상</div>
 </div>
@@ -156,6 +157,13 @@ hr.divider { border: none; border-top: 1px solid #eee; margin: 14px 0; }
   </div>
 </div>
 
+<!-- ==================== S2a 채널 ==================== -->
+<div class="panel" id="panel-s2a-channels">
+  <div class="info-box">S2a 화면에서 '(검색어) 관련 영상 요약' 버튼을 눌렀을 때 나타나는 <strong>영상 제작에 사용된 채널</strong> 목록입니다. 각 채널의 아바타 이미지, 채널명, 구독자 수를 설정할 수 있습니다.</div>
+  <div id="s2a-channel-list-admin"></div>
+  <button class="btn btn-primary btn-sm" onclick="addS2aChannel()" style="margin-top:4px;">+ 채널 추가</button>
+</div>
+
 <!-- ==================== 검색결과 피드 (S2a) ==================== -->
 <div class="panel" id="panel-search-results">
   <div class="info-box">S2a 화면의 AI 요약 영상 아래 나오는 쇼츠/일반 영상 피드입니다. 연속된 Shorts 2개는 나란히 배치됩니다.</div>
@@ -168,7 +176,11 @@ hr.divider { border: none; border-top: 1px solid #eee; margin: 14px 0; }
 
 <!-- ==================== 출처 영상 (S6) ==================== -->
 <div class="panel" id="panel-source-videos">
-  <div class="info-box">S6 화면의 출처 영상 목록입니다. 썸네일/채널명/제목 클릭 시 채널 링크로 이동합니다.</div>
+  <div class="info-box">S6 화면의 출처 영상 목록입니다. <strong>최초 검색 시</strong>와 <strong>재검색 시</strong> 각각 다른 목록을 설정할 수 있습니다.</div>
+  <div class="sub-tabs">
+    <div class="sub-tab active" onclick="switchSourceVideoTab('v1',this)">최초 검색 시</div>
+    <div class="sub-tab" onclick="switchSourceVideoTab('v2',this)">재검색 시</div>
+  </div>
   <div id="source-videos-list"></div>
   <button class="btn btn-primary btn-sm" onclick="addSourceVideo()" style="margin-top:4px;">+ 출처 영상 추가</button>
 </div>
@@ -203,7 +215,22 @@ const DEFAULT_CONFIG = {
     }
   },
   chips: ['더 다양하게', '더 길게', '더 짧게', '더 빠르게'],
+  s2aChannels: [
+    { avatarImage: null, avatarColor: '#1565C0', avatarText: '유', name: '유정', subs: '구독자 120만명', subscribed: false },
+    { avatarImage: null, avatarColor: 'linear-gradient(135deg,#f953c6,#b91d73)', avatarText: '소', name: '소희맨션soheemansion', subs: '구독자 85만명', subscribed: false },
+    { avatarImage: null, avatarColor: '#00796B', avatarText: '제', name: '제주에디 Jeju Eddy', subs: '구독자 42만명', subscribed: false }
+  ],
   sourceVideos: [
+    { id:1, thumbnailImage:null, thumbnailGradient:'green', thumbnailEmoji:'🌿', thumbnailLabel:'제주도 여행', duration:'18:29', channelAvatarImage:null, channelAvatarColor:'#1565C0', channelAvatarText:'유', channelName:'유정', channelLink:'https://www.youtube.com/@yoojung_travel', title:'고등학교 친구들과 3박 4일 제주도 여행기', details:'식당: 다람쥐 쇼쿠지 / 액티비티: 감귤 따기 / 숙소: 애월 독채 펜션 넷', subscribed:false },
+    { id:2, thumbnailImage:null, thumbnailGradient:'blue', thumbnailEmoji:'🌊', thumbnailLabel:'부산 여행', duration:'20:05', channelAvatarImage:null, channelAvatarColor:'#e65100', channelAvatarText:'찰', channelName:'찰스엔터', channelLink:'https://www.youtube.com/@charlsenter', title:'부산 여행 브이로그', details:'식당: 이재모 피자 술집 후기 / 액티비티: 부산국제영화제 / 숙소: 광안리 호텔', subscribed:false },
+    { id:3, thumbnailImage:null, thumbnailGradient:'purple-teal', thumbnailEmoji:'🗺️', thumbnailLabel:'비교 여행', duration:'15:32', channelAvatarImage:null, channelAvatarColor:'#00796B', channelAvatarText:'제', channelName:'제주에디 Jeju Eddy', channelLink:'https://www.youtube.com/@jejueddy', title:'부산 vs. 제주도 완전 비교', details:'식당: 해녀 밥상 / 액티비티: 한라산 등반 / 숙소: 제주 한옥 게스트하우스', subscribed:false },
+    { id:4, thumbnailImage:null, thumbnailGradient:'rose', thumbnailEmoji:'🍊', thumbnailLabel:'제주 맛집', duration:'14:45', channelAvatarImage:null, channelAvatarColor:'#b91d73', channelAvatarText:'소', channelName:'소희맨션soheemansion', channelLink:'https://www.youtube.com/@soheemansion', title:'제주도 숨은 맛집 TOP10 (현지인 추천)', details:'식당: 쥐치조림 노포 / 위치: 구도심 골목 / 방문: 2024.11', subscribed:true },
+    { id:5, thumbnailImage:null, thumbnailGradient:'coral', thumbnailEmoji:'✈️', thumbnailLabel:'어디가 좋을까?', duration:'22:10', channelAvatarImage:null, channelAvatarColor:'#f09819', channelAvatarText:'여', channelName:'여행ON', channelLink:'https://www.youtube.com/@traveon', title:'제주 vs 부산 어디가 더 좋아? 솔직 비교', details:'교통비 / 숙박비 / 먹거리 / 액티비티 전반 비교', subscribed:false },
+    { id:6, thumbnailImage:null, thumbnailGradient:'dark-blue', thumbnailEmoji:'🏙️', thumbnailLabel:'부산 가이드', duration:'31:22', channelAvatarImage:null, channelAvatarColor:'#2c5364', channelAvatarText:'부', channelName:'부산여행TV', channelLink:'https://www.youtube.com/@busantraveltv', title:'부산 5박 6일 완벽 가이드 (숙소·맛집·관광)', details:'숙소: 해운대 호텔 / 관광: 감천문화마을 / 맛집: 밀면 골목', subscribed:false },
+    { id:7, thumbnailImage:null, thumbnailGradient:'mint', thumbnailEmoji:'🍽️', thumbnailLabel:'현지 맛집', duration:'16:54', channelAvatarImage:null, channelAvatarColor:'#96c93d', channelAvatarText:'카', channelName:'카라쿤', channelLink:'https://www.youtube.com/@karakun', title:'제주도 현지인만 아는 찐맛집 추천 7곳', details:'식당: 순두부찌개 노포 / 위치: 제주시 / 가격: 1인 8천원~', subscribed:false },
+    { id:8, thumbnailImage:null, thumbnailGradient:'food', thumbnailEmoji:'🍖', thumbnailLabel:'부산 먹방', duration:'25:30', channelAvatarImage:null, channelAvatarColor:'#D2691E', channelAvatarText:'먹', channelName:'먹방왕', channelLink:'https://www.youtube.com/@mukbangwang', title:'부산 먹부림 5일 — 씨앗호떡부터 돼지국밥까지', details:'식당: 남포동 돼지국밥 / 가격: 1만원대 / 웨이팅: 30분', subscribed:false }
+  ],
+  sourceVideosV2: [
     { id:1, thumbnailImage:null, thumbnailGradient:'green', thumbnailEmoji:'🌿', thumbnailLabel:'제주도 여행', duration:'18:29', channelAvatarImage:null, channelAvatarColor:'#1565C0', channelAvatarText:'유', channelName:'유정', channelLink:'https://www.youtube.com/@yoojung_travel', title:'고등학교 친구들과 3박 4일 제주도 여행기', details:'식당: 다람쥐 쇼쿠지 / 액티비티: 감귤 따기 / 숙소: 애월 독채 펜션 넷', subscribed:false },
     { id:2, thumbnailImage:null, thumbnailGradient:'blue', thumbnailEmoji:'🌊', thumbnailLabel:'부산 여행', duration:'20:05', channelAvatarImage:null, channelAvatarColor:'#e65100', channelAvatarText:'찰', channelName:'찰스엔터', channelLink:'https://www.youtube.com/@charlsenter', title:'부산 여행 브이로그', details:'식당: 이재모 피자 술집 후기 / 액티비티: 부산국제영화제 / 숙소: 광안리 호텔', subscribed:false },
     { id:3, thumbnailImage:null, thumbnailGradient:'purple-teal', thumbnailEmoji:'🗺️', thumbnailLabel:'비교 여행', duration:'15:32', channelAvatarImage:null, channelAvatarColor:'#00796B', channelAvatarText:'제', channelName:'제주에디 Jeju Eddy', channelLink:'https://www.youtube.com/@jejueddy', title:'부산 vs. 제주도 완전 비교', details:'식당: 해녀 밥상 / 액티비티: 한라산 등반 / 숙소: 제주 한옥 게스트하우스', subscribed:false },
@@ -226,13 +253,20 @@ const DEFAULT_CONFIG = {
 let config = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
 let currentCreatorVideoKey = 'v1';
 let currentChapterVideoKey = 'v1';
+let currentSourceVideoKey = 'v1';
 let nextId = 100;
 
 function loadConfig() {
   try {
     const saved = localStorage.getItem(CONFIG_KEY);
-    if (saved) config = JSON.parse(saved);
-    else config = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (!parsed.s2aChannels) parsed.s2aChannels = JSON.parse(JSON.stringify(DEFAULT_CONFIG.s2aChannels));
+      if (!parsed.sourceVideosV2) parsed.sourceVideosV2 = JSON.parse(JSON.stringify(DEFAULT_CONFIG.sourceVideosV2));
+      config = parsed;
+    } else {
+      config = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
+    }
   } catch(e) {
     config = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
   }
@@ -288,7 +322,7 @@ function handleImport(input) {
 // ==================== TAB SWITCHING ====================
 function switchTab(name) {
   document.querySelectorAll('.tab').forEach((t, i) => {
-    const panels = ['ai-thumb','creator','chapters','chips','search-results','source-videos'];
+    const panels = ['ai-thumb','creator','chapters','chips','s2a-channels','search-results','source-videos'];
     t.classList.toggle('active', panels[i] === name);
   });
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
@@ -508,6 +542,94 @@ function deleteChip(idx) {
   renderChips();
 }
 
+// ==================== S2a CHANNELS ====================
+function renderS2aChannels() {
+  const list = document.getElementById('s2a-channel-list-admin');
+  if (!list) return;
+  const channels = config.s2aChannels || [];
+  list.innerHTML = '';
+  channels.forEach((ch, idx) => {
+    const div = document.createElement('div');
+    div.className = 'item-row';
+    div.innerHTML = `
+      <div class="item-row-header" onclick="toggleItemBody(this)">
+        <div style="flex:1;min-width:0;">
+          <div class="item-row-title">${escHtml(ch.name || '(이름없음)')}</div>
+          <div class="item-row-sub">${escHtml(ch.subs || '')}</div>
+        </div>
+        <div class="item-actions">
+          <button class="btn btn-ghost btn-sm" onclick="moveS2aCh(${idx},-1);event.stopPropagation();">↑</button>
+          <button class="btn btn-ghost btn-sm" onclick="moveS2aCh(${idx},1);event.stopPropagation();">↓</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteS2aCh(${idx});event.stopPropagation();">삭제</button>
+          <span style="color:#bbb;font-size:18px;padding-left:4px;">▾</span>
+        </div>
+      </div>
+      <div class="item-row-body">
+        <div style="font-size:12px;font-weight:700;color:#555;margin-bottom:8px;">아바타</div>
+        <div class="avatar-row">
+          <div class="avatar-side">
+            <label>아바타 이미지 (선택)</label>
+            <div class="img-upload-area" onclick="document.getElementById('s2ach-avatar-${idx}').click()" style="padding:10px;">
+              <img id="s2ach-avatar-preview-${idx}" src="${ch.avatarImage||''}" style="${ch.avatarImage?'display:block;':'display:none;'}max-height:60px;max-width:60px;border-radius:50%;">
+              <p id="s2ach-avatar-placeholder-${idx}" style="${ch.avatarImage?'display:none;':''}font-size:11px;">클릭하여 이미지 업로드</p>
+              <input type="file" id="s2ach-avatar-${idx}" accept="image/*" onchange="handleS2aChAvatar(this,${idx})">
+            </div>
+            ${ch.avatarImage ? `<button class="btn btn-ghost btn-sm" onclick="clearS2aChAvatar(${idx})" style="margin-top:6px;">이미지 제거</button>` : ''}
+          </div>
+          <div class="avatar-side">
+            <label>아바타 배경색 (이미지 없을 때)</label>
+            <input type="text" value="${escHtml(ch.avatarColor||'')}" placeholder="예: #1565C0 또는 linear-gradient(...)" onchange="config.s2aChannels[${idx}].avatarColor=this.value">
+            <label>아바타 글자 (이미지 없을 때)</label>
+            <input type="text" value="${escHtml(ch.avatarText||'')}" maxlength="2" onchange="config.s2aChannels[${idx}].avatarText=this.value">
+          </div>
+        </div>
+        <hr class="divider">
+        <label>채널명</label>
+        <input type="text" value="${escHtml(ch.name||'')}" onchange="config.s2aChannels[${idx}].name=this.value">
+        <label>구독자 수 (표시 텍스트)</label>
+        <input type="text" value="${escHtml(ch.subs||'')}" placeholder="예: 구독자 120만명" onchange="config.s2aChannels[${idx}].subs=this.value">
+      </div>`;
+    list.appendChild(div);
+  });
+}
+
+function addS2aChannel() {
+  if (!config.s2aChannels) config.s2aChannels = [];
+  config.s2aChannels.push({ avatarImage: null, avatarColor: '#555', avatarText: '채', name: '새 채널', subs: '구독자 0명', subscribed: false });
+  renderS2aChannels();
+}
+
+function deleteS2aCh(idx) {
+  if (!confirm('삭제하시겠습니까?')) return;
+  config.s2aChannels.splice(idx, 1);
+  renderS2aChannels();
+}
+
+function moveS2aCh(idx, dir) {
+  const arr = config.s2aChannels;
+  const newIdx = idx + dir;
+  if (newIdx < 0 || newIdx >= arr.length) return;
+  [arr[idx], arr[newIdx]] = [arr[newIdx], arr[idx]];
+  renderS2aChannels();
+}
+
+function handleS2aChAvatar(input, idx) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    config.s2aChannels[idx].avatarImage = e.target.result;
+    renderS2aChannels();
+  };
+  reader.readAsDataURL(file);
+  input.value = '';
+}
+
+function clearS2aChAvatar(idx) {
+  config.s2aChannels[idx].avatarImage = null;
+  renderS2aChannels();
+}
+
 // ==================== SEARCH RESULTS (S2a) ====================
 function renderSearchResults() {
   const list = document.getElementById('search-results-list');
@@ -602,10 +724,28 @@ function clearSRThumb(idx) {
 }
 
 // ==================== SOURCE VIDEOS (S6) ====================
+function getSVConfigKey() {
+  return currentSourceVideoKey === 'v2' ? 'sourceVideosV2' : 'sourceVideos';
+}
+
+function getSVArr() {
+  const key = getSVConfigKey();
+  if (!config[key]) config[key] = [];
+  return config[key];
+}
+
+function switchSourceVideoTab(key, el) {
+  currentSourceVideoKey = key;
+  el.parentElement.querySelectorAll('.sub-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  renderSourceVideos();
+}
+
 function renderSourceVideos() {
   const list = document.getElementById('source-videos-list');
   if (!list) return;
-  const items = config.sourceVideos || [];
+  const cfgKey = getSVConfigKey();
+  const items = getSVArr();
   list.innerHTML = '';
   items.forEach((item, idx) => {
     const div = document.createElement('div');
@@ -632,12 +772,12 @@ function renderSourceVideos() {
         </div>
         ${item.thumbnailImage ? `<button class="btn btn-ghost btn-sm" onclick="clearSVThumb(${idx})" style="margin-top:4px;">이미지 제거</button>` : ''}
         <div class="row-3" style="margin-top:8px;">
-          <div><label>그라데이션 클래스</label><input type="text" value="${escHtml(item.thumbnailGradient||'')}" placeholder="예: green" onchange="config.sourceVideos[${idx}].thumbnailGradient=this.value"></div>
-          <div><label>이모지</label><input type="text" value="${escHtml(item.thumbnailEmoji||'')}" onchange="config.sourceVideos[${idx}].thumbnailEmoji=this.value"></div>
-          <div><label>레이블</label><input type="text" value="${escHtml(item.thumbnailLabel||'')}" onchange="config.sourceVideos[${idx}].thumbnailLabel=this.value"></div>
+          <div><label>그라데이션 클래스</label><input type="text" value="${escHtml(item.thumbnailGradient||'')}" placeholder="예: green" onchange="config['${cfgKey}'][${idx}].thumbnailGradient=this.value"></div>
+          <div><label>이모지</label><input type="text" value="${escHtml(item.thumbnailEmoji||'')}" onchange="config['${cfgKey}'][${idx}].thumbnailEmoji=this.value"></div>
+          <div><label>레이블</label><input type="text" value="${escHtml(item.thumbnailLabel||'')}" onchange="config['${cfgKey}'][${idx}].thumbnailLabel=this.value"></div>
         </div>
         <label>재생시간</label>
-        <input type="text" value="${escHtml(item.duration||'')}" placeholder="예: 18:29" onchange="config.sourceVideos[${idx}].duration=this.value">
+        <input type="text" value="${escHtml(item.duration||'')}" placeholder="예: 18:29" onchange="config['${cfgKey}'][${idx}].duration=this.value">
         <hr class="divider">
         <div style="font-size:12px;font-weight:700;color:#555;margin-bottom:8px;">채널 정보</div>
         <label>채널 아이콘 이미지 (선택)</label>
@@ -648,37 +788,36 @@ function renderSourceVideos() {
         </div>
         ${item.channelAvatarImage ? `<button class="btn btn-ghost btn-sm" onclick="clearSVAvatar(${idx})" style="margin-top:4px;">이미지 제거</button>` : ''}
         <div class="row-2" style="margin-top:6px;">
-          <div><label>아바타 배경색</label><input type="text" value="${escHtml(item.channelAvatarColor||'')}" placeholder="#1565C0" onchange="config.sourceVideos[${idx}].channelAvatarColor=this.value"></div>
-          <div><label>아바타 글자</label><input type="text" value="${escHtml(item.channelAvatarText||'')}" maxlength="2" onchange="config.sourceVideos[${idx}].channelAvatarText=this.value"></div>
+          <div><label>아바타 배경색</label><input type="text" value="${escHtml(item.channelAvatarColor||'')}" placeholder="#1565C0" onchange="config['${cfgKey}'][${idx}].channelAvatarColor=this.value"></div>
+          <div><label>아바타 글자</label><input type="text" value="${escHtml(item.channelAvatarText||'')}" maxlength="2" onchange="config['${cfgKey}'][${idx}].channelAvatarText=this.value"></div>
         </div>
         <label>채널명</label>
-        <input type="text" value="${escHtml(item.channelName||'')}" onchange="config.sourceVideos[${idx}].channelName=this.value">
+        <input type="text" value="${escHtml(item.channelName||'')}" onchange="config['${cfgKey}'][${idx}].channelName=this.value">
         <label>채널 링크 (클릭 시 이동)</label>
-        <input type="url" value="${escHtml(item.channelLink||'')}" placeholder="https://www.youtube.com/@channel" onchange="config.sourceVideos[${idx}].channelLink=this.value">
+        <input type="url" value="${escHtml(item.channelLink||'')}" placeholder="https://www.youtube.com/@channel" onchange="config['${cfgKey}'][${idx}].channelLink=this.value">
         <hr class="divider">
         <label>영상 제목</label>
-        <input type="text" value="${escHtml(item.title||'')}" onchange="config.sourceVideos[${idx}].title=this.value">
+        <input type="text" value="${escHtml(item.title||'')}" onchange="config['${cfgKey}'][${idx}].title=this.value">
         <label>설명/부가정보</label>
-        <textarea onchange="config.sourceVideos[${idx}].details=this.value">${escHtml(item.details||'')}</textarea>
+        <textarea onchange="config['${cfgKey}'][${idx}].details=this.value">${escHtml(item.details||'')}</textarea>
       </div>`;
     list.appendChild(div);
   });
 }
 
 function addSourceVideo() {
-  if (!config.sourceVideos) config.sourceVideos = [];
-  config.sourceVideos.push({ id:nextId++, thumbnailImage:null, thumbnailGradient:'blue', thumbnailEmoji:'🎬', thumbnailLabel:'새 영상', duration:'00:00', channelAvatarImage:null, channelAvatarColor:'#555', channelAvatarText:'채', channelName:'새 채널', channelLink:'', title:'새 출처 영상', details:'', subscribed:false });
+  getSVArr().push({ id:nextId++, thumbnailImage:null, thumbnailGradient:'blue', thumbnailEmoji:'🎬', thumbnailLabel:'새 영상', duration:'00:00', channelAvatarImage:null, channelAvatarColor:'#555', channelAvatarText:'채', channelName:'새 채널', channelLink:'', title:'새 출처 영상', details:'', subscribed:false });
   renderSourceVideos();
 }
 
 function deleteSV(idx) {
   if (!confirm('삭제하시겠습니까?')) return;
-  config.sourceVideos.splice(idx, 1);
+  getSVArr().splice(idx, 1);
   renderSourceVideos();
 }
 
 function moveSV(idx, dir) {
-  const arr = config.sourceVideos;
+  const arr = getSVArr();
   const newIdx = idx + dir;
   if (newIdx < 0 || newIdx >= arr.length) return;
   [arr[idx], arr[newIdx]] = [arr[newIdx], arr[idx]];
@@ -689,13 +828,13 @@ function handleSVThumb(input, idx) {
   const file = input.files[0];
   if (!file) return;
   const reader = new FileReader();
-  reader.onload = (e) => { config.sourceVideos[idx].thumbnailImage = e.target.result; renderSourceVideos(); };
+  reader.onload = (e) => { getSVArr()[idx].thumbnailImage = e.target.result; renderSourceVideos(); };
   reader.readAsDataURL(file);
   input.value = '';
 }
 
 function clearSVThumb(idx) {
-  config.sourceVideos[idx].thumbnailImage = null;
+  getSVArr()[idx].thumbnailImage = null;
   renderSourceVideos();
 }
 
@@ -703,13 +842,13 @@ function handleSVAvatar(input, idx) {
   const file = input.files[0];
   if (!file) return;
   const reader = new FileReader();
-  reader.onload = (e) => { config.sourceVideos[idx].channelAvatarImage = e.target.result; renderSourceVideos(); };
+  reader.onload = (e) => { getSVArr()[idx].channelAvatarImage = e.target.result; renderSourceVideos(); };
   reader.readAsDataURL(file);
   input.value = '';
 }
 
 function clearSVAvatar(idx) {
-  config.sourceVideos[idx].channelAvatarImage = null;
+  getSVArr()[idx].channelAvatarImage = null;
   renderSourceVideos();
 }
 
@@ -729,6 +868,7 @@ function renderAll() {
   renderCreatorCards();
   renderChapters();
   renderChips();
+  renderS2aChannels();
   renderSearchResults();
   renderSourceVideos();
 }
