@@ -256,11 +256,11 @@ let currentChapterVideoKey = 'v1';
 let currentSourceVideoKey = 'v1';
 let nextId = 100;
 
-function loadConfig() {
+async function loadConfig() {
   try {
-    const saved = localStorage.getItem(CONFIG_KEY);
-    if (saved) {
-      const parsed = JSON.parse(saved);
+    const res = await fetch('./data.json');
+    if (res.ok) {
+      const parsed = await res.json();
       if (!parsed.s2aChannels) parsed.s2aChannels = JSON.parse(JSON.stringify(DEFAULT_CONFIG.s2aChannels));
       if (!parsed.sourceVideosV2) parsed.sourceVideosV2 = JSON.parse(JSON.stringify(DEFAULT_CONFIG.sourceVideosV2));
       config = parsed;
@@ -274,12 +274,12 @@ function loadConfig() {
 
 function saveAll() {
   collectAllForms();
-  try {
-    localStorage.setItem(CONFIG_KEY, JSON.stringify(config));
-    showSaveToast();
-  } catch(e) {
-    alert('저장 실패: ' + e.message + '\n(이미지 크기가 너무 클 수 있습니다)');
-  }
+  const blob = new Blob([JSON.stringify(config, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'data.json';
+  a.click();
+  showSaveToast();
 }
 
 function showSaveToast() {
@@ -874,8 +874,7 @@ function renderAll() {
 }
 
 // ==================== INIT ====================
-loadConfig();
-renderAll();
+loadConfig().then(() => renderAll());
 </script>
 </body>
 </html>
