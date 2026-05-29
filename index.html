@@ -862,9 +862,12 @@ function loadConfig() {
     if (!parsed.s2aChannels) parsed.s2aChannels = DEFAULT_CONFIG.s2aChannels;
     if (!parsed.sourceVideosV2) parsed.sourceVideosV2 = JSON.parse(JSON.stringify(DEFAULT_CONFIG.sourceVideosV2));
     config = parsed;
-    return;
+  } else {
+    config = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
   }
-  config = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
+  (config.s2aChannels || []).forEach(c => c.subscribed = false);
+  (config.sourceVideos || []).forEach(c => c.subscribed = false);
+  (config.sourceVideosV2 || []).forEach(c => c.subscribed = false);
 }
 
 // ==================== NAVIGATION ====================
