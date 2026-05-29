@@ -911,6 +911,7 @@ function goTo(screenId) {
   navStack.push(currentScreen);
   if (screenId === 's5' && currentScreen !== 's5') resetToVideo1();
   showScreen(screenId, true);
+  if (screenId === 's6') renderS6();
   if (screenId === 's-search') {
     setTimeout(() => {
       const inp = document.getElementById('s-search-input');
