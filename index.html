@@ -1112,6 +1112,7 @@ function resetToVideo1() {
   if (ct) ct.textContent = '0:00';
   if (tt) tt.textContent = '0:20';
   renderChapterMarkers();
+  renderS6();
   updateCreatorCardDisplay(getCurrentCard(0));
 }
 
@@ -1378,6 +1379,7 @@ function switchToVideo2() {
   if (ct) ct.textContent = '0:00';
   if (tt) tt.textContent = '0:30';
   renderChapterMarkers();
+  renderS6();
   const card = getCurrentCard(0);
   if (card) updateCreatorCardDisplay(card);
 }
