@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>YouTube AI 관리자 도구</title>
+<script src="./data.js"></script>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: -apple-system, 'Noto Sans KR', sans-serif; background: #f5f5f5; color: #111; font-size: 14px; }
@@ -256,17 +257,7 @@ let currentChapterVideoKey = 'v1';
 let currentSourceVideoKey = 'v1';
 let nextId = 100;
 
-async function loadConfig() {
-  try {
-    const res = await fetch('./data.json');
-    if (res.ok) {
-      const parsed = await res.json();
-      if (!parsed.s2aChannels) parsed.s2aChannels = JSON.parse(JSON.stringify(DEFAULT_CONFIG.s2aChannels));
-      if (!parsed.sourceVideosV2) parsed.sourceVideosV2 = JSON.parse(JSON.stringify(DEFAULT_CONFIG.sourceVideosV2));
-      config = parsed;
-      return;
-    }
-  } catch(e) {}
+function loadConfig() {
   try {
     const saved = localStorage.getItem(CONFIG_KEY);
     if (saved) {
@@ -277,6 +268,10 @@ async function loadConfig() {
       return;
     }
   } catch(e) {}
+  if (window.YT_AI_DATA) {
+    config = JSON.parse(JSON.stringify(window.YT_AI_DATA));
+    return;
+  }
   config = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
 }
 
@@ -291,8 +286,8 @@ async function saveAll() {
 
   const owner = 'starice19898';
   const repo = 'youtube-ai-ui-';
-  const path = 'data.json';
-  const content = btoa(unescape(encodeURIComponent(JSON.stringify(config, null, 2))));
+  const path = 'data.js';
+  const content = btoa(unescape(encodeURIComponent('window.YT_AI_DATA = ' + JSON.stringify(config, null, 2) + ';\n')));
 
   try {
     const getRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, {
@@ -312,6 +307,7 @@ async function saveAll() {
 
     if (putRes.ok) {
       localStorage.setItem(CONFIG_KEY, JSON.stringify(config));
+      window.YT_AI_DATA = JSON.parse(JSON.stringify(config));
       showSaveToast();
     } else {
       const err = await putRes.json();
@@ -919,7 +915,8 @@ function renderAll() {
 }
 
 // ==================== INIT ====================
-loadConfig().then(() => renderAll());
+loadConfig();
+renderAll();
 </script>
 </body>
 </html>
