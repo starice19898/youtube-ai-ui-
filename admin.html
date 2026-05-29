@@ -264,12 +264,20 @@ async function loadConfig() {
       if (!parsed.s2aChannels) parsed.s2aChannels = JSON.parse(JSON.stringify(DEFAULT_CONFIG.s2aChannels));
       if (!parsed.sourceVideosV2) parsed.sourceVideosV2 = JSON.parse(JSON.stringify(DEFAULT_CONFIG.sourceVideosV2));
       config = parsed;
-    } else {
-      config = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
+      return;
     }
-  } catch(e) {
-    config = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
-  }
+  } catch(e) {}
+  try {
+    const saved = localStorage.getItem(CONFIG_KEY);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (!parsed.s2aChannels) parsed.s2aChannels = JSON.parse(JSON.stringify(DEFAULT_CONFIG.s2aChannels));
+      if (!parsed.sourceVideosV2) parsed.sourceVideosV2 = JSON.parse(JSON.stringify(DEFAULT_CONFIG.sourceVideosV2));
+      config = parsed;
+      return;
+    }
+  } catch(e) {}
+  config = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
 }
 
 async function saveAll() {
@@ -303,6 +311,7 @@ async function saveAll() {
     });
 
     if (putRes.ok) {
+      localStorage.setItem(CONFIG_KEY, JSON.stringify(config));
       showSaveToast();
     } else {
       const err = await putRes.json();
