@@ -262,6 +262,7 @@
   #s5 .s5-avatar-circle { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; color: #fff; border: 2px solid rgba(255,255,255,0.6); flex-shrink: 0; }
   #s5 .s5-channel-name { font-size: 14px; font-weight: 500; color: #fff; white-space: nowrap; flex: 1; overflow: hidden; text-overflow: ellipsis; }
   #s5 .s5-subscribe { border: none; background: #fff; color: #0a0a0a; font-size: 14px; font-weight: 500; padding: 6px 12px; border-radius: 18px; cursor: pointer; white-space: nowrap; font-family: inherit; flex-shrink: 0; }
+  #s5 .s5-subscribe.subscribed { background: rgba(255,255,255,0.25); color: #fff; }
 
   /* Right-side action buttons */
   #s5 .s5-side-actions { position: absolute; right: 16px; bottom: 120px; display: flex; flex-direction: column; gap: 24px; align-items: center; z-index: 2; }
@@ -564,7 +565,7 @@
       <div class="s5-channel-row" id="creator-card" onclick="navigateCreatorChannel(event)">
         <div class="s5-avatar-circle" id="cc-avatar" style="background:linear-gradient(135deg,#1565C0,#42a5f5);">유</div>
         <span class="s5-channel-name" id="cc-name">유정 ✓</span>
-        <button class="s5-subscribe" onclick="event.stopPropagation();toggleSubscribe(this)">구독</button>
+        <button class="s5-subscribe" id="cc-subscribe-btn" onclick="event.stopPropagation();toggleCreatorSubscribe(this)">구독</button>
       </div>
     </div>
 
@@ -1138,6 +1139,7 @@ function updateCreatorCardDisplay(card) {
   if (!card) return;
   const ccAvatar = document.getElementById('cc-avatar');
   const ccName = document.getElementById('cc-name');
+  const ccSubBtn = document.getElementById('cc-subscribe-btn');
   if (!ccAvatar || !ccName) return;
   currentCreatorLink = card.link || '';
   if (card.avatarImage) {
@@ -1150,6 +1152,11 @@ function updateCreatorCardDisplay(card) {
   let nameHtml = escapeHtml(card.name || '');
   if (card.subtitle) nameHtml += ` <span style="font-size:11px;font-weight:400;opacity:0.8;">${escapeHtml(card.subtitle)}</span>`;
   ccName.innerHTML = nameHtml;
+  if (ccSubBtn) {
+    const subbed = !!card.subscribed;
+    ccSubBtn.classList.toggle('subscribed', subbed);
+    ccSubBtn.textContent = subbed ? '구독중' : '구독';
+  }
 }
 
 function navigateCreatorChannel(e) {
@@ -1388,6 +1395,26 @@ function switchToVideo2() {
 }
 
 // ==================== MISC ====================
+function toggleCreatorSubscribe(btn) {
+  const vid = document.getElementById('main-video');
+  const time = vid ? vid.currentTime : 0;
+  const card = getCurrentCard(time);
+  if (!card) return;
+  const nowSubscribed = !btn.classList.contains('subscribed');
+  card.subscribed = nowSubscribed;
+  btn.classList.toggle('subscribed', nowSubscribed);
+  btn.textContent = nowSubscribed ? '구독중' : '구독';
+  if (nowSubscribed) showToast('구독되었습니다');
+  if (card.link) {
+    ['sourceVideos', 'sourceVideosV2'].forEach(key => {
+      (config[key] || []).forEach(v => {
+        if (v.channelLink === card.link) v.subscribed = nowSubscribed;
+      });
+    });
+    renderS6();
+  }
+}
+
 function toggleSubscribe(btn) {
   if (btn.classList.contains('subscribed')) {
     btn.classList.remove('subscribed');
