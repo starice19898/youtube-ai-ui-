@@ -856,6 +856,7 @@ const DEFAULT_CONFIG = {
 let config = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
 let currentVideoKey = 'v1';
 let currentCreatorLink = '';
+let subscribedLinks = new Set();
 
 function loadConfig() {
   if (window.YT_AI_DATA) {
@@ -1019,9 +1020,10 @@ function renderS6() {
       ? `<img src="${v.channelAvatarImage}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
       : escapeHtml(v.channelAvatarText || '');
     const avatarStyle = v.channelAvatarImage ? '' : `background:${v.channelAvatarColor || '#555'};`;
-    const subsClass = v.subscribed ? 'subscribed' : '';
-    const subsText = v.subscribed ? '구독중' : '구독';
     const link = v.channelLink || '';
+    const subbed = !!(link && subscribedLinks.has(link));
+    const subsClass = subbed ? 'subscribed' : '';
+    const subsText = subbed ? '구독중' : '구독';
     return `<div class="source-item">
       <div class="source-thumb ${v.thumbnailGradient||''}" onclick="openSourceVideo('${escapeAttr(link)}')" style="position:relative;">
         ${thumbHtml}
@@ -1031,7 +1033,7 @@ function renderS6() {
         <div class="source-channel-row">
           <div class="small-avatar" style="${avatarStyle}">${avatarHtml}</div>
           <span class="channel-name" onclick="openChannel('${escapeAttr(v.channelName||'')}','${escapeAttr(link)}')">${escapeHtml(v.channelName||'')}</span>
-          <button class="subscribe-btn ${subsClass}" onclick="toggleSubscribe(this)">${subsText}</button>
+          <button class="subscribe-btn ${subsClass}" onclick="toggleSourceSubscribe(this,'${escapeAttr(link)}')">${subsText}</button>
         </div>
         <div class="source-title" onclick="openSourceVideo('${escapeAttr(link)}')">${escapeHtml(v.title||'')}</div>
         <div class="source-details">${escapeHtml(v.details||'')}</div>
@@ -1153,7 +1155,7 @@ function updateCreatorCardDisplay(card) {
   if (card.subtitle) nameHtml += ` <span style="font-size:11px;font-weight:400;opacity:0.8;">${escapeHtml(card.subtitle)}</span>`;
   ccName.innerHTML = nameHtml;
   if (ccSubBtn) {
-    const subbed = !!card.subscribed;
+    const subbed = !!(card.link && subscribedLinks.has(card.link));
     ccSubBtn.classList.toggle('subscribed', subbed);
     ccSubBtn.textContent = subbed ? '구독중' : '구독';
   }
@@ -1397,22 +1399,29 @@ function switchToVideo2() {
 // ==================== MISC ====================
 function toggleCreatorSubscribe(btn) {
   const vid = document.getElementById('main-video');
-  const time = vid ? vid.currentTime : 0;
-  const card = getCurrentCard(time);
-  if (!card) return;
+  const card = getCurrentCard(vid ? vid.currentTime : 0);
+  if (!card || !card.link) return;
   const nowSubscribed = !btn.classList.contains('subscribed');
-  card.subscribed = nowSubscribed;
+  if (nowSubscribed) subscribedLinks.add(card.link);
+  else subscribedLinks.delete(card.link);
   btn.classList.toggle('subscribed', nowSubscribed);
   btn.textContent = nowSubscribed ? '구독중' : '구독';
   if (nowSubscribed) showToast('구독되었습니다');
-  if (card.link) {
-    ['sourceVideos', 'sourceVideosV2'].forEach(key => {
-      (config[key] || []).forEach(v => {
-        if (v.channelLink === card.link) v.subscribed = nowSubscribed;
-      });
-    });
-    renderS6();
+  renderS6();
+}
+
+function toggleSourceSubscribe(btn, link) {
+  const nowSubscribed = !btn.classList.contains('subscribed');
+  if (link) {
+    if (nowSubscribed) subscribedLinks.add(link);
+    else subscribedLinks.delete(link);
+    const vid = document.getElementById('main-video');
+    const card = getCurrentCard(vid ? vid.currentTime : 0);
+    if (card && card.link === link) updateCreatorCardDisplay(card);
   }
+  btn.classList.toggle('subscribed', nowSubscribed);
+  btn.textContent = nowSubscribed ? '구독중' : '구독';
+  if (nowSubscribed) showToast('구독되었습니다');
 }
 
 function toggleSubscribe(btn) {
