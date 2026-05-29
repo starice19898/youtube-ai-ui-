@@ -131,7 +131,7 @@
   /* ===================== S2a - SEARCH RESULTS ===================== */
   .search-header-row { display: flex; align-items: center; padding: 8px 12px; gap: 8px; flex-shrink: 0; }
   .search-bar-input { flex: 1; background: #f2f2f2; border-radius: 20px; display: flex; align-items: center; padding: 8px 12px; gap: 6px; }
-  .search-bar-input input { border: none; background: transparent; flex: 1; font-size: 13px; font-family: 'Noto Sans KR', sans-serif; outline: none; color: #000; }
+  .search-bar-input .search-query-display { flex: 1; font-size: 13px; font-family: 'Noto Sans KR', sans-serif; color: #000; line-height: 1.2; word-break: break-all; }
   .x-btn { font-size: 14px; color: #888; cursor: pointer; padding: 2px; }
 
   /* S2a Tab Bar */
@@ -201,7 +201,7 @@
   #s5 .s5-video {
     position: absolute;
     left: 0; right: 0;
-    top: 50%;
+    top: 46%;
     transform: translateY(-55%);
     width: 100%;
     height: auto;
@@ -218,6 +218,9 @@
   #s5 .s5-back { width: 32px; height: 32px; flex-shrink: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; }
   #s5 .s5-back img { width: 32px; height: 32px; }
   #s5 .s5-header-title { font-size: 20px; font-weight: 500; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  #s5 .s5-ai-badge { position: absolute; top: 66px; left: 12px; display: flex; align-items: center; gap: 6px; padding: 6px 10px; background: rgba(0,0,0,0.35); color: #ddd; border-radius: 999px; z-index: 4; font-size: 12px; font-weight: 500; }
+  #s5 .s5-ai-badge svg { width: 13px; height: 13px; flex-shrink: 0; }
+  #s5 .s5-ai-badge span { color: #ddd; }
 
   /* Progress bar / Timeline */
   #s5 .s5-progress-wrap {
@@ -250,7 +253,7 @@
   #s5 .chapter-marker { position: absolute; top: -2px; width: 3px; height: 9px; background: #fff; border-radius: 2px; transform: translateX(-50%); z-index: 3; pointer-events: none; }
 
   /* Bottom info (driven by creator card) */
-  #s5 .s5-bottom-info { position: absolute; left: 16px; right: 72px; bottom: 96px; display: flex; flex-direction: column; gap: 12px; z-index: 2; }
+  #s5 .s5-bottom-info { position: absolute; left: 16px; right: 72px; bottom: 120px; display: flex; flex-direction: column; gap: 12px; z-index: 2; }
   #s5 .s5-title-row { display: flex; align-items: center; gap: 8px; }
   #s5 .s5-video-title { font-size: 15px; font-weight: 500; color: #fff; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   #s5 .s5-channel-row { display: flex; align-items: center; gap: 8px; cursor: pointer; }
@@ -260,13 +263,13 @@
   #s5 .s5-subscribe { border: none; background: #fff; color: #0a0a0a; font-size: 14px; font-weight: 500; padding: 6px 12px; border-radius: 18px; cursor: pointer; white-space: nowrap; font-family: inherit; flex-shrink: 0; }
 
   /* Right-side action buttons */
-  #s5 .s5-side-actions { position: absolute; right: 6px; bottom: 96px; display: flex; flex-direction: column; gap: 14px; align-items: center; z-index: 2; }
+  #s5 .s5-side-actions { position: absolute; right: 16px; bottom: 120px; display: flex; flex-direction: column; gap: 24px; align-items: center; z-index: 2; }
   #s5 .s5-action { display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; }
   #s5 .s5-action img { width: 24px; height: 24px; }
   #s5 .s5-action span { font-size: 10px; font-weight: 500; color: #fff; white-space: nowrap; }
 
   /* Play/pause indicator */
-  .play-pause-indicator { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); background: rgba(0,0,0,0.5); border-radius: 50%; width: 64px; height: 64px; display: flex; align-items: center; justify-content: center; z-index: 4; opacity: 0; transition: opacity 0.2s; pointer-events: none; }
+  .play-pause-indicator { position: absolute; top: 250%; left: 50%; transform: translate(-50%,-50%); background: rgba(0,0,0,0.5); border-radius: 50%; width: 64px; height: 64px; display: flex; align-items: center; justify-content: center; z-index: 4; opacity: 0; transition: opacity 0.2s; pointer-events: none; }
 
   /* Dark bottom nav */
   #s5 .s5-nav { position: absolute; bottom: 0; left: 0; right: 0; height: 72px; background: #0f0f0f; display: flex; align-items: center; justify-content: center; gap: 24px; padding: 10px 12px; z-index: 3; }
@@ -531,6 +534,13 @@
       <span class="s5-header-title" id="s5-header-title">AI 개요</span>
     </div>
 
+    <div class="s5-ai-badge">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
+        <path d="M12 2l2.09 6.26L20 10l-5.91 1.74L12 18l-2.09-6.26L4 10l5.91-1.74z" fill="#ccc" stroke="none"/>
+      </svg>
+      <span>AI 요약</span>
+    </div>
+
     <!-- Progress bar / Timeline -->
     <div class="s5-progress-wrap" id="timeline-container">
       <div class="s5-time-row">
@@ -548,7 +558,7 @@
     <!-- Bottom info (creator card) -->
     <div class="s5-bottom-info">
       <div class="s5-title-row">
-        <span class="s5-video-title" id="s5-video-title">AI 요약 영상</span>
+        <span class="s5-video-title" id="s5-video-title">부산 VS 제주 여행지 비교</span>
       </div>
       <div class="s5-channel-row" id="creator-card" onclick="navigateCreatorChannel(event)">
         <div class="s5-avatar-circle" id="cc-avatar" style="background:linear-gradient(135deg,#1565C0,#42a5f5);">유</div>
@@ -559,7 +569,7 @@
 
     <!-- Right-side action buttons -->
     <div class="s5-side-actions">
-      <div class="s5-action" onclick="showToast('공유 기능')">
+      <div class="s5-action" onclick="showToast('링크 복사 완료')">
         <img src="assets/home/shorts-share.svg" alt="">
         <span>공유</span>
       </div>
@@ -694,7 +704,7 @@
     <div class="search-header-row">
       <div class="back-btn" onclick="goBack()">←</div>
       <div class="search-bar-input">
-        <input id="s2a-query-display" type="text" value="제주도 맛집" readonly />
+        <span id="s2a-query-display" class="search-query-display">제주도 맛집</span>
         <span class="x-btn">✕</span>
         <svg class="icon-svg sm" viewBox="0 0 24 24" style="flex-shrink:0;"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
       </div>
@@ -715,8 +725,7 @@
       <!-- AI 요약 label -->
       <div class="s2a-ai-label">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
-          <path d="M12 2l2.09 6.26L20 10l-5.91 1.74L12 18l-2.09-6.26L4 10l5.91-1.74z" fill="url(#gem)" stroke="none"/>
-          <defs><linearGradient id="gem" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#4285f4"/><stop offset="33%" stop-color="#ea4335"/><stop offset="66%" stop-color="#fbbc04"/><stop offset="100%" stop-color="#34a853"/></linearGradient></defs>
+          <path d="M12 2l2.09 6.26L20 10l-5.91 1.74L12 18l-2.09-6.26L4 10l5.91-1.74z" fill="#999" stroke="none"/>
         </svg>
         <span>AI 요약</span>
       </div>
@@ -939,11 +948,13 @@ function searchRegular(query) {
   const trimmed = query.trim();
   if (!trimmed) return;
   const displayInput = document.getElementById('s2a-query-display');
-  if (displayInput) displayInput.value = trimmed;
+  if (displayInput) displayInput.textContent = trimmed;
   const titleEl = document.getElementById('s2a-video-title');
-  if (titleEl) titleEl.textContent = trimmed + ' 요약';
+  if (titleEl) titleEl.textContent = trimmed;
   const pillText = document.querySelector('#s2a-more-btn .s2a-pill-text');
   if (pillText) pillText.textContent = trimmed + ' 관련 영상 요약';
+  const s5HeaderTitle = document.getElementById('s5-header-title');
+  if (s5HeaderTitle) s5HeaderTitle.textContent = trimmed;
   goTo('s2a');
 }
 
