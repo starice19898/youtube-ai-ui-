@@ -1,16 +1,340 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>YouTube AI Prototype</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body { font-family: 'Noto Sans KR', sans-serif; background: #111; min-height: 100vh; display: flex; justify-content: center; align-items: center; }
+  #phone-frame { width: 390px; height: 844px; background: #fff; position: relative; overflow: hidden; flex-shrink: 0; }
+  @media (max-width: 430px) { body { background: #fff; align-items: flex-start; } #phone-frame { width: 100%; height: 100dvh; } }
+  @media (min-width: 431px) { body { padding: 20px 0; align-items: center; } #phone-frame { border-radius: 40px; box-shadow: 0 0 0 10px #222, 0 30px 80px rgba(0,0,0,0.8); overflow: hidden; margin: 0 auto; } }
+
+  .screen { display: none; flex-direction: column; width: 100%; height: 100%; background: #fff; position: absolute; top: 0; left: 0; overflow: hidden; }
+  .screen.active { display: flex; position: relative; }
+
+  /* STATUS BAR */
+  .status-bar { display: flex; justify-content: space-between; align-items: center; padding: 8px 20px 4px; font-size: 12px; font-weight: 600; flex-shrink: 0; }
+  .status-bar .time { font-size: 14px; font-weight: 700; }
+  .status-icons { display: flex; gap: 5px; align-items: center; font-size: 12px; }
+  .icon-svg { width: 22px; height: 22px; fill: none; stroke: #000; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .icon-svg.sm { width: 18px; height: 18px; }
+
+  /* SHARED */
+  .scroll-area { flex: 1; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+  .scroll-area::-webkit-scrollbar { display: none; }
+  .header-icon { width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 50%; flex-shrink: 0; }
+  .header-icon:active { background: rgba(0,0,0,0.08); }
+  .back-btn { font-size: 20px; cursor: pointer; padding: 4px 6px; border-radius: 50%; line-height: 1; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+  .back-btn:active { background: rgba(0,0,0,0.08); }
+  .subscribe-btn { margin-left: auto; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; cursor: pointer; border: 1.5px solid #000; background: #000; color: #fff; white-space: nowrap; flex-shrink: 0; transition: all 0.2s; }
+  .subscribe-btn.subscribed { background: #fff; color: #555; border-color: #ccc; }
+
+  /* GRADIENT CLASSES */
+  .sunset  { background: linear-gradient(135deg, #ff6b6b 0%, #feca57 30%, #ff9ff3 60%, #ff6b9d 100%); }
+  .ocean   { background: linear-gradient(135deg, #0f3460 0%, #16213e 50%, #0f3460 100%); }
+  .forest  { background: linear-gradient(135deg, #134e5e 0%, #71b280 100%); }
+  .space   { background: linear-gradient(135deg, #0d0d2b 0%, #1a1a6e 40%, #2d1b69 100%); }
+  .green   { background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%); }
+  .blue    { background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); }
+  .orange  { background: linear-gradient(135deg, #f7971e 0%, #ffd200 100%); }
+  .teal    { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
+  .purple-teal { background: linear-gradient(135deg, #8360c3 0%, #2ebf91 100%); }
+  .food    { background: linear-gradient(135deg, #8B4513 0%, #D2691E 50%, #DEB887 100%); }
+  .palm    { background: linear-gradient(135deg, #1a6b3c 0%, #56ab2f 60%, #a8e063 100%); }
+  .rose    { background: linear-gradient(135deg, #f953c6 0%, #b91d73 100%); }
+  .dark-blue { background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%); }
+  .coral   { background: linear-gradient(135deg, #ff512f 0%, #f09819 100%); }
+  .mint    { background: linear-gradient(135deg, #00b09b 0%, #96c93d 100%); }
+  .indigo  { background: linear-gradient(135deg, #4776e6 0%, #8e54e9 100%); }
+
+  /* AVATAR COLOR CLASSES */
+  .av-blue  { background: #1565C0; }
+  .av-orange{ background: #e65100; }
+  .av-teal  { background: #00796B; }
+  .av-pink  { background: linear-gradient(135deg, #f953c6, #b91d73); }
+  .av-coral { background: linear-gradient(135deg, #ff512f, #f09819); }
+  .av-navy  { background: linear-gradient(135deg, #0f2027, #2c5364); }
+  .av-mint  { background: linear-gradient(135deg, #00b09b, #96c93d); }
+  .av-brown { background: linear-gradient(135deg, #8B4513, #D2691E); }
+
+  /* THUMB OVERLAY */
+  .thumb-overlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+
+  /* TOAST */
+  .yt-toast { position: absolute; bottom: 82px; left: 50%; transform: translateX(-50%); background: rgba(30,30,30,0.92); color: #fff; font-size: 12px; font-weight: 500; padding: 9px 18px; border-radius: 20px; white-space: nowrap; z-index: 999; pointer-events: none; animation: toastFade 2.2s ease forwards; }
+  @keyframes toastFade { 0% { opacity: 0; transform: translateX(-50%) translateY(8px); } 12% { opacity: 1; transform: translateX(-50%) translateY(0); } 72% { opacity: 1; } 100% { opacity: 0; } }
+
+  /* ===================== S1 HOME ===================== */
+  #s1 { background: #ececec; }
+  #s1 .home-top { background: #fff; padding: 10px 12px; flex-shrink: 0; }
+  #s1 .home-header { display: flex; align-items: center; justify-content: space-between; padding: 2px; }
+  #s1 .home-yt-logo { width: 90px; height: 20px; object-fit: contain; display: block; }
+  #s1 .home-header-actions { display: flex; align-items: center; gap: 12px; }
+  #s1 .home-header-icon { width: 24px; height: 24px; display: block; flex-shrink: 0; }
+  #s1 .home-header-icon-btn { border: none; background: transparent; padding: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+  #s1 .home-profile { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+  #s1 .home-header-divider { height: 1px; background: #ececec; margin: 10px 0 12px; }
+  #s1 .home-cat-bar { display: flex; align-items: center; gap: 14px; overflow: hidden; }
+  #s1 .home-explore-btn { width: 32px; height: 32px; background: #ececec; border-radius: 4px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  #s1 .home-explore-btn img { width: 16px; height: 16px; }
+  #s1 .home-cat-divider { width: 1px; height: 20px; background: #cecece; flex-shrink: 0; }
+  #s1 .home-cat-tabs { display: flex; gap: 4px; overflow-x: auto; flex: 1; -webkit-overflow-scrolling: touch; padding: 2px 0; }
+  #s1 .home-cat-tabs::-webkit-scrollbar { display: none; }
+  #s1 .home-cat-chip { padding: 8px 12px; border-radius: 24px; font-size: 12px; font-weight: 400; white-space: nowrap; flex-shrink: 0; background: #ececec; color: #0a0a0a; border: 1px solid #cecece; }
+  #s1 .home-cat-chip.active { background: #3b3b3b; color: #fff; border-color: #6c6c6c; }
+  #s1 .home-feed { background: #ececec; display: flex; flex-direction: column; gap: 6px; }
+  #s1 .home-video-block { background: #fff; padding-bottom: 20px; display: flex; flex-direction: column; gap: 14px; }
+  #s1 .home-video-thumb { width: 100%; height: 215px; overflow: hidden; background: #c4c4c4; }
+  #s1 .home-video-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  #s1 .home-video-info { display: flex; align-items: flex-start; gap: 12px; padding: 0 12px; }
+  #s1 .home-channel-avatar { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+  #s1 .home-video-meta { flex: 1; min-width: 0; }
+  #s1 .home-video-title { font-size: 14px; font-weight: 500; line-height: 1.35; color: #0a0a0a; margin-bottom: 8px; word-break: break-word; }
+  #s1 .home-video-sub { font-size: 12px; color: #6c6c6c; line-height: 1.3; }
+  #s1 .home-menu-icon { width: 24px; height: 24px; flex-shrink: 0; }
+  #s1 .home-shorts-block { background: #fff; padding: 14px 10px 20px 12px; display: flex; flex-direction: column; gap: 14px; }
+  #s1 .home-shorts-header { display: flex; align-items: center; gap: 8px; }
+  #s1 .home-shorts-logo { width: 24px; height: 29px; object-fit: contain; }
+  #s1 .home-shorts-label { font-size: 16px; font-weight: 500; color: #0a0a0a; }
+  #s1 .home-shorts-row { display: flex; gap: 12px; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 2px; }
+  #s1 .home-shorts-row::-webkit-scrollbar { display: none; }
+  #s1 .home-short-card { position: relative; width: 150px; height: 250px; flex-shrink: 0; border-radius: 12px; overflow: hidden; }
+  #s1 .home-short-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  #s1 .home-short-overlay { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0.12) 0%, rgba(0,0,0,0.32) 100%); display: flex; flex-direction: column; justify-content: space-between; align-items: flex-end; padding: 12px 8px; }
+  #s1 .home-short-menu { width: 24px; height: 24px; }
+  #s1 .home-short-text { align-self: stretch; color: #fff; }
+  #s1 .home-short-title { font-size: 12px; font-weight: 500; line-height: 1.35; margin-bottom: 8px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  #s1 .home-short-views { font-size: 10px; font-weight: 500; opacity: 0.95; }
+
+  /* HOME BOTTOM NAV */
+  .home-bottom-nav { height: 72px; padding: 20px 12px 20px; gap: 24px; justify-content: center; border-top: 1px solid #ececec; display: flex; align-items: center; flex-shrink: 0; background: #fff; }
+  .home-nav-item { display: flex; flex-direction: column; align-items: center; gap: 1px; width: 48px; flex-shrink: 0; cursor: pointer; }
+  .home-nav-icon { width: 24px; height: 24px; display: block; }
+  .home-nav-shorts { width: 30px !important; height: 26px !important; }
+  .home-nav-sub, .home-nav-library { width: 28px !important; height: 28px !important; }
+  .home-nav-label { font-size: 12px; color: #0a0a0a; font-weight: 400; white-space: nowrap; }
+  .home-nav-item.active .home-nav-label { font-weight: 700; }
+  .home-nav-create { width: 42px; height: 42px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .home-nav-create img { width: 42px; height: 42px; }
+
+  /* ===================== S-SEARCH ===================== */
+  .s-search-header { display: flex; align-items: center; padding: 8px 12px; gap: 8px; flex-shrink: 0; }
+  .s-search-wrap { flex: 1; background: #f2f2f2; border-radius: 22px; display: flex; align-items: center; padding: 10px 16px; gap: 8px; }
+  .s-search-wrap input { border: none; background: transparent; flex: 1; font-size: 15px; font-family: 'Noto Sans KR', sans-serif; outline: none; color: #000; }
+  .s-search-wrap input::placeholder { color: #888; }
+  .mic-btn { width: 40px; height: 40px; border-radius: 50%; background: #222; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
+
+  /* ===================== S2a - SEARCH RESULTS ===================== */
+  .search-header-row { display: flex; align-items: center; padding: 8px 12px; gap: 8px; flex-shrink: 0; }
+  .search-bar-input { flex: 1; background: #f2f2f2; border-radius: 20px; display: flex; align-items: center; padding: 8px 12px; gap: 6px; }
+  .search-bar-input .search-query-display { flex: 1; font-size: 13px; font-family: 'Noto Sans KR', sans-serif; color: #000; line-height: 1.2; word-break: break-all; }
+  .x-btn { font-size: 14px; color: #888; cursor: pointer; padding: 2px; }
+
+  /* S2a Tab Bar */
+  .s2a-tab-bar { display: flex; gap: 4px; padding: 8px 12px; overflow-x: auto; -webkit-overflow-scrolling: touch; flex-shrink: 0; }
+  .s2a-tab-bar::-webkit-scrollbar { display: none; }
+  .s2a-chip { padding: 8px 12px; border-radius: 24px; font-size: 12px; font-weight: 400; white-space: nowrap; flex-shrink: 0; background: #ececec; color: #0a0a0a; border: 1px solid #cecece; cursor: pointer; }
+  .s2a-chip.active { background: #3b3b3b; color: #fff; border-color: #6c6c6c; font-weight: 500; }
+
+  /* AI label */
+  .s2a-ai-label { display: flex; align-items: center; gap: 6px; padding: 10px 15px 6px; }
+  .s2a-ai-label span { font-size: 12px; font-weight: 500; color: rgba(0,0,0,0.5); }
+
+  /* AI video card */
+  .s2a-video-card { margin: 0 15px; height: 412px; border-radius: 12px; overflow: hidden; position: relative; cursor: pointer; background: #c7c7c7; flex-shrink: 0; }
+  .s2a-video-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+  .s2a-video-grad { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.05) 55%); pointer-events: none; }
+  .s2a-play-icon { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 56px; height: 56px; background: rgba(0,0,0,0.45); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid rgba(255,255,255,0.7); pointer-events: none; }
+  .s2a-play-icon svg { margin-left: 3px; }
+  .s2a-video-title { position: absolute; bottom: 16px; left: 16px; right: 16px; font-size: 18px; font-weight: 600; color: #fff; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); line-height: 1.3; z-index: 1; }
+
+  /* 더보기 pill */
+  .s2a-more-pill { margin: 10px 15px 8px; background: #505050; border-radius: 12px; height: 36px; display: flex; align-items: center; justify-content: space-between; padding: 0 16px; cursor: pointer; gap: 8px; }
+  .s2a-pill-text { font-size: 11px; font-weight: 500; color: #fff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }
+  .s2a-chevron { flex-shrink: 0; transition: transform 0.2s ease; }
+  .s2a-more-pill.open .s2a-chevron { transform: rotate(180deg); }
+
+  /* Expandable section */
+  .more-section { display: none; padding: 0 14px 8px; }
+  .more-section.open { display: block; }
+  .summary-card { margin: 0 0 10px; background: #d4d4d4; border-radius: 12px; padding: 14px; flex-shrink: 0; }
+  .summary-title { font-size: 13px; font-weight: 700; color: #000; margin-bottom: 8px; }
+  .summary-text { font-size: 12px; color: #444; line-height: 1.7; }
+  .channel-list-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid #f5f5f5; }
+  .channel-list-item--last { border-bottom: none; }
+  .channel-list-avatar { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: #fff; flex-shrink: 0; overflow: hidden; }
+  .channel-list-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+  .channel-list-info { flex: 1; }
+  .channel-list-name { font-size: 13px; font-weight: 600; color: #000; }
+  .channel-list-subs { font-size: 11px; color: #888; }
+
+  /* Mixed feed */
+  .mixed-feed { padding: 8px 14px 4px; display: flex; flex-direction: column; gap: 16px; }
+  .s2a-shorts-row { display: flex; gap: 8px; }
+  .s2a-short-card { flex: 1; border-radius: 12px; overflow: hidden; cursor: pointer; position: relative; }
+  .s2a-short-thumb { width: 100%; height: 279px; position: relative; }
+  .s2a-short-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.08) 60%); display: flex; flex-direction: column; justify-content: flex-end; padding: 10px 8px; }
+  .s2a-short-text { width: 100%; }
+  .s2a-short-title { font-size: 12px; font-weight: 500; color: #fff; line-height: 1.35; margin-bottom: 5px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .s2a-short-views { font-size: 10px; font-weight: 500; color: rgba(255,255,255,0.85); }
+  .shorts-card { flex: 1; cursor: pointer; }
+  .shorts-thumb { width: 100%; aspect-ratio: 9 / 16; border-radius: 10px; position: relative; overflow: hidden; margin-bottom: 6px; }
+  .shorts-thumb img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .shorts-badge { position: absolute; bottom: 7px; left: 7px; background: rgba(0,0,0,0.65); color: #fff; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px; letter-spacing: 0.2px; }
+  .shorts-title { font-size: 12px; font-weight: 500; color: #000; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 2px; }
+  .shorts-channel { font-size: 11px; color: #666; }
+  .shorts-pair { display: flex; gap: 8px; }
+  .regular-card { cursor: pointer; display: flex; flex-direction: column; gap: 0; }
+  .regular-thumb { width: 100%; aspect-ratio: 16 / 9; border-radius: 10px; position: relative; overflow: hidden; margin-bottom: 7px; }
+  .regular-thumb img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .regular-duration { position: absolute; bottom: 6px; right: 7px; background: rgba(0,0,0,0.75); color: #fff; font-size: 10px; font-weight: 600; padding: 2px 5px; border-radius: 3px; }
+  .regular-title { font-size: 13px; font-weight: 600; color: #000; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 3px; }
+  .regular-channel { font-size: 12px; color: #666; }
+
+  /* ===================== S5: SHORTS PLAYER ===================== */
+  #s5 { background: #0a0a0a; position: relative; overflow: hidden; }
+
+  #s5 .s5-video {
+    position: absolute;
+    left: 0; right: 0;
+    top: 46%;
+    transform: translateY(-55%);
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    object-position: center center;
+    z-index: 0;
+  }
+
+  #s5 .s5-grad-top { position: absolute; top: 0; left: 0; right: 0; height: 140px; background: linear-gradient(to top, transparent, rgba(0,0,0,0.75)); z-index: 1; pointer-events: none; }
+  #s5 .s5-grad-bottom { position: absolute; bottom: 72px; left: 0; right: 0; height: 200px; background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.88)); z-index: 1; pointer-events: none; }
+
+  /* Header */
+  #s5 .s5-header { position: absolute; top: 0; left: 0; right: 0; height: 56px; background: #0a0a0a; display: flex; align-items: center; padding: 12px 16px; gap: 24px; z-index: 3; flex-shrink: 0; }
+  #s5 .s5-back { width: 32px; height: 32px; flex-shrink: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+  #s5 .s5-back img { width: 32px; height: 32px; }
+  #s5 .s5-header-title { font-size: 20px; font-weight: 500; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  #s5 .s5-ai-badge { position: absolute; top: 66px; left: 12px; display: flex; align-items: center; gap: 6px; padding: 6px 10px; background: rgba(0,0,0,0.35); color: #ddd; border-radius: 999px; z-index: 4; font-size: 12px; font-weight: 500; }
+  #s5 .s5-ai-badge svg { width: 13px; height: 13px; flex-shrink: 0; }
+  #s5 .s5-ai-badge span { color: #ddd; }
+
+  /* Progress bar / Timeline */
+  #s5 .s5-progress-wrap {
+    position: absolute;
+    left: 0; right: 0;
+    bottom: 72px;
+    height: 34px;
+    z-index: 4;
+    cursor: pointer;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    overflow: visible;
+  }
+
+  #s5 .s5-time-row { display: flex; justify-content: space-between; padding: 0 6px 4px; font-size: 10px; color: rgba(255,255,255,0.75); pointer-events: none; }
+
+  #s5 .s5-progress-track { position: relative; height: 5.4px; flex-shrink: 0; overflow: visible; }
+
+  #s5 .s5-progress-bg { position: absolute; inset: 0; background: rgba(255,255,255,0.35); }
+  #s5 .s5-progress-fill { position: absolute; top: 0; left: 0; bottom: 0; width: 0%; background: #ff0000; }
+  #s5 .s5-progress-thumb { position: absolute; top: 50%; width: 12px; height: 12px; border-radius: 50%; background: #ff0000; transform: translate(-50%, -50%); pointer-events: none; z-index: 2; left: 0%; }
+
+  /* Chapter popup — positioned above progress track */
+  #s5 .chapter-popup { position: absolute; bottom: calc(100% + 8px); left: 8px; right: 8px; background: rgba(20,20,20,0.93); border-radius: 10px; padding: 10px 14px; z-index: 10; display: none; pointer-events: none; }
+  #s5 .chapter-popup.visible { display: block; }
+  #s5 .chapter-marker { position: absolute; top: -2px; width: 3px; height: 9px; background: #fff; border-radius: 2px; transform: translateX(-50%); z-index: 3; pointer-events: none; }
+
+  /* Bottom info (driven by creator card) */
+  #s5 .s5-bottom-info { position: absolute; left: 16px; right: 72px; bottom: 120px; display: flex; flex-direction: column; gap: 12px; z-index: 2; }
+  #s5 .s5-title-row { display: flex; align-items: center; gap: 8px; }
+  #s5 .s5-video-title { font-size: 15px; font-weight: 500; color: #fff; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  #s5 .s5-channel-row { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+  #s5 .s5-avatar { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; flex-shrink: 0; border: 2px solid rgba(255,255,255,0.6); }
+  #s5 .s5-avatar-circle { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; color: #fff; border: 2px solid rgba(255,255,255,0.6); flex-shrink: 0; }
+  #s5 .s5-channel-name { font-size: 14px; font-weight: 500; color: #fff; white-space: nowrap; flex: 1; overflow: hidden; text-overflow: ellipsis; }
+  #s5 .s5-subscribe { border: none; background: #fff; color: #0a0a0a; font-size: 14px; font-weight: 500; padding: 6px 12px; border-radius: 18px; cursor: pointer; white-space: nowrap; font-family: inherit; flex-shrink: 0; }
+
+  /* Right-side action buttons */
+  #s5 .s5-side-actions { position: absolute; right: 16px; bottom: 120px; display: flex; flex-direction: column; gap: 24px; align-items: center; z-index: 2; }
+  #s5 .s5-action { display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; }
+  #s5 .s5-action img { width: 24px; height: 24px; }
+  #s5 .s5-action span { font-size: 10px; font-weight: 500; color: #fff; white-space: nowrap; }
+
+  /* Play/pause indicator */
+  .play-pause-indicator { position: absolute; top: 250%; left: 50%; transform: translate(-50%,-50%); background: rgba(0,0,0,0.5); border-radius: 50%; width: 64px; height: 64px; display: flex; align-items: center; justify-content: center; z-index: 4; opacity: 0; transition: opacity 0.2s; pointer-events: none; }
+
+  /* Dark bottom nav */
+  #s5 .s5-nav { position: absolute; bottom: 0; left: 0; right: 0; height: 72px; background: #0f0f0f; display: flex; align-items: center; justify-content: center; gap: 24px; padding: 10px 12px; z-index: 3; }
+  #s5 .s5-nav-item { display: flex; flex-direction: column; align-items: center; gap: 1px; width: 48px; flex-shrink: 0; cursor: pointer; }
+  #s5 .s5-nav-item img { width: 24px; height: 24px; }
+  #s5 .s5-nav-shorts-icon { width: 30px !important; height: 26px !important; }
+  #s5 .s5-nav-lg { width: 28px !important; height: 28px !important; }
+  #s5 .s5-nav-item span { font-size: 11px; color: #fff; font-weight: 400; white-space: nowrap; }
+  #s5 .s5-nav-create { width: 42px; height: 42px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  #s5 .s5-nav-create img { width: 42px; height: 42px; }
+
+  /* Re-search sheet overlay */
+  #s5 .s5-search-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.5); z-index: 10; opacity: 0; pointer-events: none; transition: opacity 0.25s ease; }
+  #s5 .s5-search-overlay.open { opacity: 1; pointer-events: auto; }
+
+  /* Re-search bottom sheet */
+  .re-search-sheet { position: absolute; bottom: 0; left: 0; right: 0; background: #fff; border-radius: 20px 20px 0 0; padding: 12px 16px 40px; z-index: 11; transform: translateY(100%); transition: transform 0.32s cubic-bezier(0.32,0.72,0,1); pointer-events: none; }
+  .re-search-sheet.visible { transform: translateY(0); pointer-events: auto; }
+  .re-search-handle { width: 40px; height: 4px; background: #e0e0e0; border-radius: 2px; margin: 0 auto 14px; }
+  .re-search-chips-row { display: flex; gap: 8px; padding: 0 0 12px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .re-search-chips-row::-webkit-scrollbar { display: none; }
+  .re-chip { padding: 8px 16px; border-radius: 20px; background: #f2f2f2; font-size: 13px; font-weight: 500; color: #222; white-space: nowrap; cursor: pointer; border: none; flex-shrink: 0; }
+  .re-chip:active { background: #e8e8e8; }
+  .re-search-bar { display: flex; align-items: center; background: #f2f2f2; border-radius: 26px; padding: 10px 10px 10px 16px; gap: 10px; }
+  .re-search-bar input { flex: 1; border: none; background: transparent; font-size: 15px; font-family: 'Noto Sans KR', sans-serif; outline: none; color: #000; }
+  .re-search-bar input::placeholder { color: #aaa; }
+  .re-search-submit { width: 38px; height: 38px; border-radius: 50%; background: #0f0f0f; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; padding-left: 2px; }
+  .re-search-submit:active { background: #333; }
+
+  /* Loading overlay */
+  .loading-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.92); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 40; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
+  .loading-overlay.visible { opacity: 1; pointer-events: all; }
+  @keyframes ytSpin { to { transform: rotate(360deg); } }
+  .yt-spinner { width: 44px; height: 44px; border: 3px solid rgba(255,255,255,0.2); border-top-color: #fff; border-radius: 50%; animation: ytSpin 0.75s linear infinite; margin-bottom: 16px; }
+
+  /* ===================== S6: SOURCE VIDEOS ===================== */
+  .source-header { display: flex; align-items: center; padding: 8px 12px; gap: 8px; flex-shrink: 0; }
+  .source-brand { display: flex; align-items: center; gap: 6px; flex: 1; }
+  .source-brand-icon { width: 26px; height: 26px; border-radius: 50%; background: #ff0000; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .source-brand-name { font-size: 14px; font-weight: 700; }
+  .source-more-btn { font-size: 22px; font-weight: 700; line-height: 1; }
+  .source-section-label { display: flex; align-items: center; gap: 6px; padding: 12px 14px 10px; font-size: 13px; font-weight: 700; color: #000; border-bottom: 1px solid #f0f0f0; }
+  .source-section-count { font-size: 12px; font-weight: 400; color: #888; margin-left: 2px; }
+  .source-item { display: flex; gap: 10px; padding: 10px 14px; border-bottom: 1px solid #f5f5f5; cursor: pointer; }
+  .source-thumb { width: 130px; height: 80px; border-radius: 8px; position: relative; overflow: hidden; flex-shrink: 0; cursor: pointer; }
+  .source-thumb img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .source-time-badge { position: absolute; bottom: 4px; right: 4px; background: rgba(0,0,0,0.7); color: #fff; font-size: 10px; font-weight: 600; padding: 2px 5px; border-radius: 3px; }
+  .source-thumb-overlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 4px; }
+  .source-thumb-emoji { color: #fff; font-size: 22px; line-height: 1; }
+  .source-thumb-label { color: rgba(255,255,255,0.9); font-size: 11px; font-weight: 600; text-shadow: 0 1px 3px rgba(0,0,0,0.5); }
+  .source-info { flex: 1; min-width: 0; }
+  .source-channel-row { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
+  .small-avatar { width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; color: #fff; flex-shrink: 0; overflow: hidden; }
+  .small-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+  .channel-name { font-size: 12px; font-weight: 700; color: #000; cursor: pointer; }
+  .channel-name:hover { text-decoration: underline; }
+  .source-title { font-size: 13px; font-weight: 600; color: #000; line-height: 1.3; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .source-details { font-size: 11px; color: #666; line-height: 1.4; }
+  .s6-bottom-spacer { height: 28px; }
+</style>
 </head>
 <body>
 <div id="phone-frame">
 
-  <!-- ===================== S1: Main Screen ===================== -->
+  <!-- ==================== S1: 홈 ==================== -->
   <div class="screen active" id="s1">
     <div class="status-bar">
       <span class="time">10:54</span>
@@ -23,7 +347,7 @@
 
     <div class="home-top">
       <div class="home-header">
-        <img class="home-yt-logo" src="assets\home\Youtube Logo.svg" alt="YouTube">
+        <img class="home-yt-logo" src="assets/home/Youtube Logo.svg" alt="YouTube">
         <div class="home-header-actions">
           <img class="home-header-icon" src="assets/home/icon-cast.svg" alt="">
           <img class="home-header-icon" src="assets/home/icon-bell.svg" alt="">
@@ -132,7 +456,7 @@
       </div>
     </div>
 
-    <div class="bottom-nav home-bottom-nav">
+    <div class="home-bottom-nav">
       <div class="home-nav-item active">
         <img class="home-nav-icon" src="assets/home/icon-home.svg" alt="">
         <span class="home-nav-label">홈</span>
@@ -155,7 +479,7 @@
     </div>
   </div>
 
-  <!-- ===================== S-Search: Regular Search Input ===================== -->
+  <!-- ==================== S-Search: 검색 입력 ==================== -->
   <div class="screen" id="s-search">
     <div class="status-bar">
       <span class="time">10:54</span>
@@ -165,7 +489,6 @@
         <svg class="icon-svg sm" viewBox="0 0 24 24" fill="#000" stroke="none"><rect x="2" y="7" width="18" height="11" rx="2"/><path d="M22 11v3" stroke="#000" stroke-width="2.5" stroke-linecap="round"/></svg>
       </div>
     </div>
-
     <div class="s-search-header">
       <div class="back-btn" onclick="goBack()">←</div>
       <div class="s-search-wrap">
@@ -181,51 +504,72 @@
         </svg>
       </div>
     </div>
-
-    <!-- Empty content area (user types here, presses Enter) -->
     <div style="flex:1;background:#fff;"></div>
   </div>
 
-  <!-- ===================== S5: Shorts Player ===================== -->
+  <!-- ==================== S5: 비디오 플레이어 ==================== -->
   <div class="screen" id="s5">
-    <!-- Full-screen video -->
-    <video class="s5-video" src="assets/home/test.mp4" autoplay loop muted playsinline></video>
+    <!-- Fullscreen video -->
+    <video id="main-video" class="s5-video" playsinline webkit-playsinline preload="metadata">
+      <source id="main-video-src" src="video20.mp4" type="video/mp4">
+    </video>
 
-    <!-- Top gradient (header fades into video) -->
+    <!-- Gradients -->
     <div class="s5-grad-top"></div>
-    <!-- Bottom gradient (video fades into info area) -->
     <div class="s5-grad-bottom"></div>
 
-    <!-- Top header bar -->
+    <!-- Tap area for play/pause (behind other elements) -->
+    <div id="video-tap-area" style="position:absolute;inset:0;z-index:1;" onclick="toggleVideoPlay()"></div>
+
+    <!-- Play/pause indicator -->
+    <div class="play-pause-indicator" id="play-pause-indicator">
+      <span id="play-pause-icon" style="font-size:32px;color:#fff;margin-left:3px;">▶</span>
+    </div>
+
+    <!-- Top header -->
     <div class="s5-header">
       <div class="s5-back" onclick="goBack()">
         <img src="assets/home/shorts-arrow-left.svg" alt="">
       </div>
-      <span class="s5-header-title">AI 개요</span>
+      <span class="s5-header-title" id="s5-header-title">AI 개요</span>
     </div>
 
-    <!-- Progress bar (sits just above nav) -->
-    <div class="s5-progress-wrap">
-      <div class="s5-progress-bg"></div>
-      <div class="s5-progress-fill"></div>
+    <div class="s5-ai-badge">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
+        <path d="M12 2l2.09 6.26L20 10l-5.91 1.74L12 18l-2.09-6.26L4 10l5.91-1.74z" fill="#ccc" stroke="none"/>
+      </svg>
+      <span>AI 요약</span>
     </div>
 
-    <!-- Bottom-left: video title + channel row -->
+    <!-- Progress bar / Timeline -->
+    <div class="s5-progress-wrap" id="timeline-container">
+      <div class="s5-time-row">
+        <span id="current-time">0:00</span>
+        <span id="total-time">0:20</span>
+      </div>
+      <div class="s5-progress-track">
+        <div class="chapter-popup" id="chapter-popup"></div>
+        <div class="s5-progress-bg" id="timeline-bar"></div>
+        <div class="s5-progress-fill" id="timeline-fill"></div>
+        <div class="s5-progress-thumb" id="timeline-thumb" style="left:0%;"></div>
+      </div>
+    </div>
+
+    <!-- Bottom info (creator card) -->
     <div class="s5-bottom-info">
       <div class="s5-title-row">
-        <span class="s5-video-title">제주도 여행 가볼만한곳 베스트 33 | 제주도 여행코스 추천</span>
-        <img class="s5-link-icon" src="assets/home/shorts-link-arrow.svg" alt="">
+        <span class="s5-video-title" id="s5-video-title">부산 VS 제주 여행지 비교</span>
       </div>
-      <div class="s5-channel-row">
-        <img class="s5-avatar" src="assets/home/shorts-channel-avatar.jpg" alt="">
-        <span class="s5-channel-name">@채널명</span>
-        <button class="s5-subscribe">구독</button>
+      <div class="s5-channel-row" id="creator-card" onclick="navigateCreatorChannel(event)">
+        <div class="s5-avatar-circle" id="cc-avatar" style="background:linear-gradient(135deg,#1565C0,#42a5f5);">유</div>
+        <span class="s5-channel-name" id="cc-name">유정 ✓</span>
+        <button class="s5-subscribe" onclick="event.stopPropagation();toggleSubscribe(this)">구독</button>
       </div>
     </div>
 
     <!-- Right-side action buttons -->
     <div class="s5-side-actions">
-      <div class="s5-action" onclick="showToast('공유 기능')">
+      <div class="s5-action" onclick="showToast('링크 복사 완료')">
         <img src="assets/home/shorts-share.svg" alt="">
         <span>공유</span>
       </div>
@@ -233,7 +577,7 @@
         <img src="assets/home/shorts-save.svg" alt="">
         <span>저장</span>
       </div>
-      <div class="s5-action" onclick="openS5Search()">
+      <div class="s5-action" onclick="showReSearchSheet()">
         <img src="assets/home/shorts-search.svg" alt="">
         <span>재검색</span>
       </div>
@@ -243,21 +587,32 @@
       </div>
     </div>
 
-    <!-- Search Bottom Sheet -->
-    <div class="s5-search-overlay" id="s5-search-overlay" onclick="closeS5Search()"></div>
-    <div class="s5-search-sheet" id="s5-search-sheet">
-      <div class="s5-search-handle"></div>
-      <div class="s5-search-bar">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input id="s5-search-input" type="text" placeholder="무엇이든 물어보세요"
-               onkeydown="if(event.key==='Enter'){var v=this.value.trim();if(v)s5SearchSubmit(v);}" />
-        <button class="s5-search-submit" onclick="var v=document.getElementById('s5-search-input').value.trim();if(v)s5SearchSubmit(v);">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="white" stroke="none"><polygon points="5,3 19,12 5,21"/></svg>
+    <!-- Re-search sheet overlay -->
+    <div class="s5-search-overlay" id="re-search-overlay" onclick="hideReSearchSheet()"></div>
+
+    <!-- Re-search sheet -->
+    <div class="re-search-sheet" id="re-search-sheet">
+      <div class="re-search-handle"></div>
+      <div class="re-search-chips-row" id="re-search-chips-row"></div>
+      <div class="re-search-bar">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input id="re-search-input" type="text" placeholder="영상을 어떻게 개선할까요?"
+               onkeydown="if(event.key==='Enter')submitReSearch();" />
+        <button class="re-search-submit" onclick="submitReSearch()">
+          <svg viewBox="0 0 24 24" fill="white" width="16" height="16"><polygon points="5,3 19,12 5,21"/></svg>
         </button>
       </div>
     </div>
 
-    <!-- Dark bottom nav (Shorts player unique) -->
+    <!-- Loading overlay -->
+    <div class="loading-overlay" id="loading-overlay">
+      <div class="yt-spinner"></div>
+      <div style="color:#fff;font-size:15px;font-weight:600;">영상을 재생성중입니다</div>
+    </div>
+
+    <!-- Dark bottom nav -->
     <div class="s5-nav">
       <div class="s5-nav-item" onclick="goTo('s1')">
         <img src="assets/home/shorts-nav-home.svg" alt="">
@@ -281,7 +636,7 @@
     </div>
   </div>
 
-  <!-- ===================== S6: Source Videos ===================== -->
+  <!-- ==================== S6: 출처 영상 ==================== -->
   <div class="screen" id="s6">
     <div class="status-bar">
       <span class="time">10:54</span>
@@ -291,7 +646,6 @@
         <svg class="icon-svg sm" viewBox="0 0 24 24" fill="#000" stroke="none"><rect x="2" y="7" width="18" height="11" rx="2"/><path d="M22 11v3" stroke="#000" stroke-width="2.5" stroke-linecap="round"/></svg>
       </div>
     </div>
-
     <div class="source-header">
       <div class="back-btn" onclick="goBack()">←</div>
       <div class="source-brand">
@@ -305,179 +659,16 @@
       </div>
       <div class="header-icon source-more-btn">⋮</div>
     </div>
-
     <div class="scroll-area">
-
       <div class="source-section-label">
         AI 요약에 사용된 영상
-        <span class="source-section-count">8개</span>
+        <span class="source-section-count" id="s6-count">8개</span>
       </div>
-
-      <!-- Source Item 1 -->
-      <div class="source-item">
-        <div class="source-thumb green">
-          <div class="thumb-overlay source-thumb-overlay">
-            <span class="source-thumb-emoji">🌿</span>
-            <span class="source-thumb-label">제주도 여행</span>
-          </div>
-          <div class="source-time-badge">18:29</div>
-        </div>
-        <div class="source-info">
-          <div class="source-channel-row">
-            <div class="small-avatar av-blue">유</div>
-            <span class="channel-name" onclick="openChannel('유정','@yoojung_travel')">유정</span>
-            <button class="subscribe-btn" onclick="toggleSubscribe(this)">구독</button>
-          </div>
-          <div class="source-title">고등학교 친구들과 3박 4일 제주도 여행기</div>
-          <div class="source-details">식당: 다람쥐 쇼쿠지 / 액티비티: 감귤 따기 / 숙소: 애월 독채 펜션 넷</div>
-        </div>
-      </div>
-
-      <!-- Source Item 2 -->
-      <div class="source-item">
-        <div class="source-thumb blue">
-          <div class="thumb-overlay source-thumb-overlay">
-            <span class="source-thumb-emoji">🌊</span>
-            <span class="source-thumb-label">부산 여행</span>
-          </div>
-          <div class="source-time-badge">20:05</div>
-        </div>
-        <div class="source-info">
-          <div class="source-channel-row">
-            <div class="small-avatar av-orange">찰</div>
-            <span class="channel-name" onclick="openChannel('찰스엔터','@charlsenter')">찰스엔터</span>
-            <button class="subscribe-btn" onclick="toggleSubscribe(this)">구독</button>
-          </div>
-          <div class="source-title">부산 여행 브이로그</div>
-          <div class="source-details">식당: 이재모 피자 술집 후기 / 액티비티: 부산국제영화제 / 숙소: 광안리 호텔</div>
-        </div>
-      </div>
-
-      <!-- Source Item 3 -->
-      <div class="source-item">
-        <div class="source-thumb purple-teal">
-          <div class="thumb-overlay source-thumb-overlay">
-            <span class="source-thumb-emoji">🗺️</span>
-            <span class="source-thumb-label">비교 여행</span>
-          </div>
-          <div class="source-time-badge">15:32</div>
-        </div>
-        <div class="source-info">
-          <div class="source-channel-row">
-            <div class="small-avatar av-teal">제</div>
-            <span class="channel-name" onclick="openChannel('제주에디 Jeju Eddy','@jejueddy')">제주에디 Jeju Eddy</span>
-            <button class="subscribe-btn" onclick="toggleSubscribe(this)">구독</button>
-          </div>
-          <div class="source-title">부산 vs. 제주도 완전 비교</div>
-          <div class="source-details">식당: 해녀 밥상 / 액티비티: 한라산 등반 / 숙소: 제주 한옥 게스트하우스</div>
-        </div>
-      </div>
-
-      <!-- Source Item 4 -->
-      <div class="source-item">
-        <div class="source-thumb rose">
-          <div class="thumb-overlay source-thumb-overlay">
-            <span class="source-thumb-emoji">🍊</span>
-            <span class="source-thumb-label">제주 맛집</span>
-          </div>
-          <div class="source-time-badge">14:45</div>
-        </div>
-        <div class="source-info">
-          <div class="source-channel-row">
-            <div class="small-avatar av-pink">소</div>
-            <span class="channel-name" onclick="openChannel('소희맨션soheemansion','@soheemansion')">소희맨션soheemansion</span>
-            <button class="subscribe-btn subscribed" onclick="toggleSubscribe(this)">구독중</button>
-          </div>
-          <div class="source-title">제주도 숨은 맛집 TOP10 (현지인 추천)</div>
-          <div class="source-details">식당: 쥐치조림 노포 / 위치: 구도심 골목 / 방문: 2024.11</div>
-        </div>
-      </div>
-
-      <!-- Source Item 5 -->
-      <div class="source-item">
-        <div class="source-thumb coral">
-          <div class="thumb-overlay source-thumb-overlay">
-            <span class="source-thumb-emoji">✈️</span>
-            <span class="source-thumb-label">어디가 좋을까?</span>
-          </div>
-          <div class="source-time-badge">22:10</div>
-        </div>
-        <div class="source-info">
-          <div class="source-channel-row">
-            <div class="small-avatar av-coral">여</div>
-            <span class="channel-name" onclick="openChannel('여행ON','@traveon')">여행ON</span>
-            <button class="subscribe-btn" onclick="toggleSubscribe(this)">구독</button>
-          </div>
-          <div class="source-title">제주 vs 부산 어디가 더 좋아? 솔직 비교</div>
-          <div class="source-details">교통비 / 숙박비 / 먹거리 / 액티비티 전반 비교</div>
-        </div>
-      </div>
-
-      <!-- Source Item 6 -->
-      <div class="source-item">
-        <div class="source-thumb dark-blue">
-          <div class="thumb-overlay source-thumb-overlay">
-            <span class="source-thumb-emoji">🏙️</span>
-            <span class="source-thumb-label">부산 가이드</span>
-          </div>
-          <div class="source-time-badge">31:22</div>
-        </div>
-        <div class="source-info">
-          <div class="source-channel-row">
-            <div class="small-avatar av-navy">부</div>
-            <span class="channel-name" onclick="openChannel('부산여행TV','@busantraveltv')">부산여행TV</span>
-            <button class="subscribe-btn" onclick="toggleSubscribe(this)">구독</button>
-          </div>
-          <div class="source-title">부산 5박 6일 완벽 가이드 (숙소·맛집·관광)</div>
-          <div class="source-details">숙소: 해운대 호텔 / 관광: 감천문화마을 / 맛집: 밀면 골목</div>
-        </div>
-      </div>
-
-      <!-- Source Item 7 -->
-      <div class="source-item">
-        <div class="source-thumb mint">
-          <div class="thumb-overlay source-thumb-overlay">
-            <span class="source-thumb-emoji">🍽️</span>
-            <span class="source-thumb-label">현지 맛집</span>
-          </div>
-          <div class="source-time-badge">16:54</div>
-        </div>
-        <div class="source-info">
-          <div class="source-channel-row">
-            <div class="small-avatar av-mint">카</div>
-            <span class="channel-name" onclick="openChannel('카라쿤','@karakun')">카라쿤</span>
-            <button class="subscribe-btn" onclick="toggleSubscribe(this)">구독</button>
-          </div>
-          <div class="source-title">제주도 현지인만 아는 찐맛집 추천 7곳</div>
-          <div class="source-details">식당: 순두부찌개 노포 / 위치: 제주시 / 가격: 1인 8천원~</div>
-        </div>
-      </div>
-
-      <!-- Source Item 8 -->
-      <div class="source-item">
-        <div class="source-thumb food">
-          <div class="thumb-overlay source-thumb-overlay">
-            <span class="source-thumb-emoji">🍖</span>
-            <span class="source-thumb-label">부산 먹방</span>
-          </div>
-          <div class="source-time-badge">25:30</div>
-        </div>
-        <div class="source-info">
-          <div class="source-channel-row">
-            <div class="small-avatar av-brown">먹</div>
-            <span class="channel-name" onclick="openChannel('먹방왕','@mukbangwang')">먹방왕</span>
-            <button class="subscribe-btn" onclick="toggleSubscribe(this)">구독</button>
-          </div>
-          <div class="source-title">부산 먹부림 5일 — 씨앗호떡부터 돼지국밥까지</div>
-          <div class="source-details">식당: 남포동 돼지국밥 / 가격: 1만원대 / 웨이팅: 30분</div>
-        </div>
-      </div>
-
+      <div id="s6-source-list"></div>
       <div class="s6-bottom-spacer"></div>
     </div>
-
-    <div class="bottom-nav home-bottom-nav">
-      <div class="home-nav-item">
+    <div class="home-bottom-nav">
+      <div class="home-nav-item" onclick="goTo('s1')">
         <img class="home-nav-icon" src="assets/home/icon-home.svg" alt="">
         <span class="home-nav-label">홈</span>
       </div>
@@ -499,7 +690,7 @@
     </div>
   </div>
 
-  <!-- ===================== S2a: Regular Search Results ===================== -->
+  <!-- ==================== S2a: 검색 결과 ==================== -->
   <div class="screen" id="s2a">
     <div class="status-bar">
       <span class="time">10:54</span>
@@ -513,14 +704,14 @@
     <div class="search-header-row">
       <div class="back-btn" onclick="goBack()">←</div>
       <div class="search-bar-input">
-        <input type="text" value="제주도 맛집" readonly />
+        <span id="s2a-query-display" class="search-query-display">제주도 맛집</span>
         <span class="x-btn">✕</span>
         <svg class="icon-svg sm" viewBox="0 0 24 24" style="flex-shrink:0;"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
       </div>
       <div class="header-icon" style="font-size:22px;font-weight:700;">⋮</div>
     </div>
 
-    <!-- Tab Bar: Figma chip style -->
+    <!-- Tab Bar: chip style -->
     <div class="s2a-tab-bar">
       <div class="s2a-chip active">전체</div>
       <div class="s2a-chip">AI 요약</div>
@@ -531,29 +722,27 @@
     </div>
 
     <div class="scroll-area">
-
       <!-- AI 요약 label -->
       <div class="s2a-ai-label">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
-          <path d="M12 2l2.09 6.26L20 10l-5.91 1.74L12 18l-2.09-6.26L4 10l5.91-1.74z" fill="url(#gem)" stroke="none"/>
-          <defs><linearGradient id="gem" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#4285f4"/><stop offset="33%" stop-color="#ea4335"/><stop offset="66%" stop-color="#fbbc04"/><stop offset="100%" stop-color="#34a853"/></linearGradient></defs>
+          <path d="M12 2l2.09 6.26L20 10l-5.91 1.74L12 18l-2.09-6.26L4 10l5.91-1.74z" fill="#999" stroke="none"/>
         </svg>
         <span>AI 요약</span>
       </div>
 
-      <!-- AI video card (전체 클릭 → s5) -->
+      <!-- AI video card -->
       <div class="s2a-video-card" onclick="goTo('s5')">
-        <img class="s2a-video-bg" src="assets\video-thumb.png" alt="">
+        <img class="s2a-video-bg" id="ai-thumb-img" src="assets/video-thumb.png" alt="">
         <div class="s2a-video-grad"></div>
         <div class="s2a-play-icon">
           <svg viewBox="0 0 24 24" fill="white" width="28" height="28"><polygon points="5,3 19,12 5,21"/></svg>
         </div>
-        <div class="s2a-video-title" id="s2a-video-title">제주도 맛집 영상 요약</div>
+        <div class="s2a-video-title" id="s2a-video-title">제주도 맛집 요약</div>
       </div>
 
-      <!-- 더보기 pill (Figma #505050) -->
+      <!-- More pill: "(검색어) 관련 영상 요약" -->
       <div class="s2a-more-pill" id="s2a-more-btn" onclick="toggleMoreSection(this)">
-        <span class="s2a-pill-text">부산과 제주도의 여행지 비교 (쇼츠의 텍스트 요약문)</span>
+        <span class="s2a-pill-text">제주도 맛집 관련 영상 요약</span>
         <svg class="s2a-chevron" width="12" height="8" viewBox="0 0 12 8" fill="none">
           <path d="M1 1l5 5 5-5" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
@@ -561,115 +750,21 @@
 
       <!-- Expandable section -->
       <div class="more-section" id="s2a-more-section">
-        <div class="summary-card" style="margin:0 0 10px;">
+        <div class="summary-card">
           <div class="summary-title">영상 내용 요약</div>
-          <div class="summary-text">제주도 맛집이라는 검색어와 관련성이 가장 높은 영상들을 활용하여 만들었습니다. 택시기사님 추천 쥐치조림부터 로컬들이 사랑하는 순두부찌개 맛집까지, 아는 사람만 아는 찐 제주도 맛집을 소개합니다.</div>
+          <div class="summary-text">검색어와 관련성이 가장 높은 영상들을 활용하여 만들었습니다. 택시기사님 추천 쥐치조림부터 로컬들이 사랑하는 순두부찌개 맛집까지, 아는 사람만 아는 찐맛집을 소개합니다.</div>
         </div>
         <div style="font-size:13px;font-weight:700;color:#000;margin-bottom:8px;">영상 제작에 사용된 채널</div>
-        <div class="channel-list-item">
-          <div class="channel-list-avatar av-blue">유</div>
-          <div class="channel-list-info">
-            <div class="channel-list-name">유정</div>
-            <div class="channel-list-subs">구독자 120만명</div>
-          </div>
-          <button class="subscribe-btn" onclick="toggleSubscribe(this)">구독</button>
-        </div>
-        <div class="channel-list-item">
-          <div class="channel-list-avatar av-pink">소</div>
-          <div class="channel-list-info">
-            <div class="channel-list-name">소희맨션soheemansion</div>
-            <div class="channel-list-subs">구독자 85만명</div>
-          </div>
-          <button class="subscribe-btn" onclick="toggleSubscribe(this)">구독</button>
-        </div>
-        <div class="channel-list-item channel-list-item--last">
-          <div class="channel-list-avatar av-teal">제</div>
-          <div class="channel-list-info">
-            <div class="channel-list-name">제주에디 Jeju Eddy</div>
-            <div class="channel-list-subs">구독자 42만명</div>
-          </div>
-          <button class="subscribe-btn" onclick="toggleSubscribe(this)">구독</button>
-        </div>
+        <div id="s2a-channel-list"></div>
       </div>
 
-      <!-- Mixed feed: Shorts (overlay 스타일) + 일반 영상 -->
-      <div class="mixed-feed">
-
-        <!-- Row 1: 쇼츠 2개 -->
-        <div class="s2a-shorts-row">
-          <div class="s2a-short-card" onclick="goTo('s5')">
-            <div class="s2a-short-thumb orange">
-              <div class="s2a-short-overlay">
-                <div class="s2a-short-text">
-                  <p class="s2a-short-title">제주 흑돼지 맛집 솔직 후기 (현지인 픽)</p>
-                  <p class="s2a-short-views">조회수 24만회</p>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="s2a-short-card" onclick="goTo('s5')">
-            <div class="s2a-short-thumb teal">
-              <div class="s2a-short-overlay">
-                <div class="s2a-short-text">
-                  <p class="s2a-short-title">제주 뷰 맛집 TOP3 30초 요약</p>
-                  <p class="s2a-short-views">조회수 18만회</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Row 2: 일반 영상 -->
-        <div class="regular-card">
-          <div class="regular-thumb palm">
-            <div class="thumb-overlay"><span style="color:#fff;font-size:20px;">🌴</span></div>
-            <div class="regular-duration">18:29</div>
-          </div>
-          <div class="regular-title">제주도민이 추천하는 찐 맛집 코스 (성산·서귀포 편)</div>
-          <div class="regular-channel">서이두 · 조회수 241만 · 2일 전</div>
-        </div>
-
-        <!-- Row 3: 쇼츠 2개 -->
-        <div class="s2a-shorts-row">
-          <div class="s2a-short-card" onclick="goTo('s5')">
-            <div class="s2a-short-thumb food">
-              <div class="s2a-short-overlay">
-                <div class="s2a-short-text">
-                  <p class="s2a-short-title">제주 숨은 국수 맛집 발굴</p>
-                  <p class="s2a-short-views">조회수 11만회</p>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="s2a-short-card" onclick="goTo('s5')">
-            <div class="s2a-short-thumb rose">
-              <div class="s2a-short-overlay">
-                <div class="s2a-short-text">
-                  <p class="s2a-short-title">제주 카페 인생샷 명소 3곳</p>
-                  <p class="s2a-short-views">조회수 9만회</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Row 4: 일반 영상 -->
-        <div class="regular-card">
-          <div class="regular-thumb blue">
-            <div class="thumb-overlay"><span style="color:#fff;font-size:20px;">✈️</span></div>
-            <div class="regular-duration">22:10</div>
-          </div>
-          <div class="regular-title">제주 여행 2박 3일 완전 정복 (맛집+숙소+코스 총정리)</div>
-          <div class="regular-channel">유정 · 조회수 87만 · 5일 전</div>
-        </div>
-
-      </div>
-
+      <!-- Mixed feed -->
+      <div class="mixed-feed" id="s2a-mixed-feed"></div>
       <div style="height:16px;"></div>
     </div>
 
-    <div class="bottom-nav home-bottom-nav">
-      <div class="home-nav-item active">
+    <div class="home-bottom-nav">
+      <div class="home-nav-item active" onclick="goTo('s1')">
         <img class="home-nav-icon" src="assets/home/icon-home.svg" alt="">
         <span class="home-nav-label">홈</span>
       </div>
@@ -692,6 +787,667 @@
   </div>
 
 </div><!-- end phone-frame -->
-<script src="app.js"></script>
+
+<script>
+// ==================== CONFIG ====================
+const CONFIG_KEY = 'ytAIConfig';
+
+const DEFAULT_CONFIG = {
+  version: 1,
+  aiThumbnail: null,
+  videos: {
+    v1: {
+      creatorCards: [{
+        id: 1, startTime: 0, endTime: 999,
+        avatarImage: null, avatarColor: 'linear-gradient(135deg,#1565C0,#42a5f5)', avatarText: '유',
+        name: '유정 ✓', subtitle: '(외 2채널 참여)', subs: '구독자 120만명',
+        link: 'https://www.youtube.com/@yoojung_travel'
+      }],
+      chapters: []
+    },
+    v2: {
+      creatorCards: [{
+        id: 1, startTime: 0, endTime: 999,
+        avatarImage: null, avatarColor: 'linear-gradient(135deg,#1565C0,#42a5f5)', avatarText: '유',
+        name: '유정 ✓', subtitle: '', subs: '구독자 120만명',
+        link: 'https://www.youtube.com/@yoojung_travel'
+      }],
+      chapters: []
+    }
+  },
+  chips: ['더 다양하게', '더 길게', '더 짧게', '더 빠르게'],
+  s2aChannels: [
+    { avatarImage: null, avatarColor: '#1565C0', avatarText: '유', name: '유정', subs: '구독자 120만명', subscribed: false },
+    { avatarImage: null, avatarColor: 'linear-gradient(135deg,#f953c6,#b91d73)', avatarText: '소', name: '소희맨션soheemansion', subs: '구독자 85만명', subscribed: false },
+    { avatarImage: null, avatarColor: '#00796B', avatarText: '제', name: '제주에디 Jeju Eddy', subs: '구독자 42만명', subscribed: false }
+  ],
+  sourceVideos: [
+    { id:1, thumbnailImage:null, thumbnailGradient:'green', thumbnailEmoji:'🌿', thumbnailLabel:'제주도 여행', duration:'18:29', channelAvatarImage:null, channelAvatarColor:'#1565C0', channelAvatarText:'유', channelName:'유정', channelLink:'https://www.youtube.com/@yoojung_travel', title:'고등학교 친구들과 3박 4일 제주도 여행기', details:'식당: 다람쥐 쇼쿠지 / 액티비티: 감귤 따기 / 숙소: 애월 독채 펜션 넷', subscribed:false },
+    { id:2, thumbnailImage:null, thumbnailGradient:'blue', thumbnailEmoji:'🌊', thumbnailLabel:'부산 여행', duration:'20:05', channelAvatarImage:null, channelAvatarColor:'#e65100', channelAvatarText:'찰', channelName:'찰스엔터', channelLink:'https://www.youtube.com/@charlsenter', title:'부산 여행 브이로그', details:'식당: 이재모 피자 술집 후기 / 액티비티: 부산국제영화제 / 숙소: 광안리 호텔', subscribed:false },
+    { id:3, thumbnailImage:null, thumbnailGradient:'purple-teal', thumbnailEmoji:'🗺️', thumbnailLabel:'비교 여행', duration:'15:32', channelAvatarImage:null, channelAvatarColor:'#00796B', channelAvatarText:'제', channelName:'제주에디 Jeju Eddy', channelLink:'https://www.youtube.com/@jejueddy', title:'부산 vs. 제주도 완전 비교', details:'식당: 해녀 밥상 / 액티비티: 한라산 등반 / 숙소: 제주 한옥 게스트하우스', subscribed:false },
+    { id:4, thumbnailImage:null, thumbnailGradient:'rose', thumbnailEmoji:'🍊', thumbnailLabel:'제주 맛집', duration:'14:45', channelAvatarImage:null, channelAvatarColor:'#b91d73', channelAvatarText:'소', channelName:'소희맨션soheemansion', channelLink:'https://www.youtube.com/@soheemansion', title:'제주도 숨은 맛집 TOP10 (현지인 추천)', details:'식당: 쥐치조림 노포 / 위치: 구도심 골목 / 방문: 2024.11', subscribed:true },
+    { id:5, thumbnailImage:null, thumbnailGradient:'coral', thumbnailEmoji:'✈️', thumbnailLabel:'어디가 좋을까?', duration:'22:10', channelAvatarImage:null, channelAvatarColor:'#f09819', channelAvatarText:'여', channelName:'여행ON', channelLink:'https://www.youtube.com/@traveon', title:'제주 vs 부산 어디가 더 좋아? 솔직 비교', details:'교통비 / 숙박비 / 먹거리 / 액티비티 전반 비교', subscribed:false },
+    { id:6, thumbnailImage:null, thumbnailGradient:'dark-blue', thumbnailEmoji:'🏙️', thumbnailLabel:'부산 가이드', duration:'31:22', channelAvatarImage:null, channelAvatarColor:'#2c5364', channelAvatarText:'부', channelName:'부산여행TV', channelLink:'https://www.youtube.com/@busantraveltv', title:'부산 5박 6일 완벽 가이드 (숙소·맛집·관광)', details:'숙소: 해운대 호텔 / 관광: 감천문화마을 / 맛집: 밀면 골목', subscribed:false },
+    { id:7, thumbnailImage:null, thumbnailGradient:'mint', thumbnailEmoji:'🍽️', thumbnailLabel:'현지 맛집', duration:'16:54', channelAvatarImage:null, channelAvatarColor:'#96c93d', channelAvatarText:'카', channelName:'카라쿤', channelLink:'https://www.youtube.com/@karakun', title:'제주도 현지인만 아는 찐맛집 추천 7곳', details:'식당: 순두부찌개 노포 / 위치: 제주시 / 가격: 1인 8천원~', subscribed:false },
+    { id:8, thumbnailImage:null, thumbnailGradient:'food', thumbnailEmoji:'🍖', thumbnailLabel:'부산 먹방', duration:'25:30', channelAvatarImage:null, channelAvatarColor:'#D2691E', channelAvatarText:'먹', channelName:'먹방왕', channelLink:'https://www.youtube.com/@mukbangwang', title:'부산 먹부림 5일 — 씨앗호떡부터 돼지국밥까지', details:'식당: 남포동 돼지국밥 / 가격: 1만원대 / 웨이팅: 30분', subscribed:false }
+  ],
+  sourceVideosV2: [
+    { id:1, thumbnailImage:null, thumbnailGradient:'green', thumbnailEmoji:'🌿', thumbnailLabel:'제주도 여행', duration:'18:29', channelAvatarImage:null, channelAvatarColor:'#1565C0', channelAvatarText:'유', channelName:'유정', channelLink:'https://www.youtube.com/@yoojung_travel', title:'고등학교 친구들과 3박 4일 제주도 여행기', details:'식당: 다람쥐 쇼쿠지 / 액티비티: 감귤 따기 / 숙소: 애월 독채 펜션 넷', subscribed:false },
+    { id:2, thumbnailImage:null, thumbnailGradient:'blue', thumbnailEmoji:'🌊', thumbnailLabel:'부산 여행', duration:'20:05', channelAvatarImage:null, channelAvatarColor:'#e65100', channelAvatarText:'찰', channelName:'찰스엔터', channelLink:'https://www.youtube.com/@charlsenter', title:'부산 여행 브이로그', details:'식당: 이재모 피자 술집 후기 / 액티비티: 부산국제영화제 / 숙소: 광안리 호텔', subscribed:false },
+    { id:3, thumbnailImage:null, thumbnailGradient:'purple-teal', thumbnailEmoji:'🗺️', thumbnailLabel:'비교 여행', duration:'15:32', channelAvatarImage:null, channelAvatarColor:'#00796B', channelAvatarText:'제', channelName:'제주에디 Jeju Eddy', channelLink:'https://www.youtube.com/@jejueddy', title:'부산 vs. 제주도 완전 비교', details:'식당: 해녀 밥상 / 액티비티: 한라산 등반 / 숙소: 제주 한옥 게스트하우스', subscribed:false },
+    { id:4, thumbnailImage:null, thumbnailGradient:'rose', thumbnailEmoji:'🍊', thumbnailLabel:'제주 맛집', duration:'14:45', channelAvatarImage:null, channelAvatarColor:'#b91d73', channelAvatarText:'소', channelName:'소희맨션soheemansion', channelLink:'https://www.youtube.com/@soheemansion', title:'제주도 숨은 맛집 TOP10 (현지인 추천)', details:'식당: 쥐치조림 노포 / 위치: 구도심 골목 / 방문: 2024.11', subscribed:true },
+    { id:5, thumbnailImage:null, thumbnailGradient:'coral', thumbnailEmoji:'✈️', thumbnailLabel:'어디가 좋을까?', duration:'22:10', channelAvatarImage:null, channelAvatarColor:'#f09819', channelAvatarText:'여', channelName:'여행ON', channelLink:'https://www.youtube.com/@traveon', title:'제주 vs 부산 어디가 더 좋아? 솔직 비교', details:'교통비 / 숙박비 / 먹거리 / 액티비티 전반 비교', subscribed:false },
+    { id:6, thumbnailImage:null, thumbnailGradient:'dark-blue', thumbnailEmoji:'🏙️', thumbnailLabel:'부산 가이드', duration:'31:22', channelAvatarImage:null, channelAvatarColor:'#2c5364', channelAvatarText:'부', channelName:'부산여행TV', channelLink:'https://www.youtube.com/@busantraveltv', title:'부산 5박 6일 완벽 가이드 (숙소·맛집·관광)', details:'숙소: 해운대 호텔 / 관광: 감천문화마을 / 맛집: 밀면 골목', subscribed:false },
+    { id:7, thumbnailImage:null, thumbnailGradient:'mint', thumbnailEmoji:'🍽️', thumbnailLabel:'현지 맛집', duration:'16:54', channelAvatarImage:null, channelAvatarColor:'#96c93d', channelAvatarText:'카', channelName:'카라쿤', channelLink:'https://www.youtube.com/@karakun', title:'제주도 현지인만 아는 찐맛집 추천 7곳', details:'식당: 순두부찌개 노포 / 위치: 제주시 / 가격: 1인 8천원~', subscribed:false },
+    { id:8, thumbnailImage:null, thumbnailGradient:'food', thumbnailEmoji:'🍖', thumbnailLabel:'부산 먹방', duration:'25:30', channelAvatarImage:null, channelAvatarColor:'#D2691E', channelAvatarText:'먹', channelName:'먹방왕', channelLink:'https://www.youtube.com/@mukbangwang', title:'부산 먹부림 5일 — 씨앗호떡부터 돼지국밥까지', details:'식당: 남포동 돼지국밥 / 가격: 1만원대 / 웨이팅: 30분', subscribed:false }
+  ],
+  searchResults: [
+    { type:'shorts', id:'sr1', thumbnailImage:null, thumbnailGradient:'orange', thumbnailEmoji:'🍊', title:'제주 흑돼지 맛집 솔직 후기 (현지인 픽)', views:'조회수 24만회' },
+    { type:'shorts', id:'sr2', thumbnailImage:null, thumbnailGradient:'teal', thumbnailEmoji:'🌊', title:'제주 뷰 맛집 TOP3 30초 요약', views:'조회수 18만회' },
+    { type:'regular', id:'sr3', thumbnailImage:null, thumbnailGradient:'palm', thumbnailEmoji:'🌴', duration:'18:29', title:'제주도민이 추천하는 찐 맛집 코스 (성산·서귀포 편)', channel:'서이두 · 조회수 241만 · 2일 전' },
+    { type:'shorts', id:'sr4', thumbnailImage:null, thumbnailGradient:'food', thumbnailEmoji:'🍜', title:'제주 숨은 국수 맛집 발굴', views:'조회수 11만회' },
+    { type:'shorts', id:'sr5', thumbnailImage:null, thumbnailGradient:'rose', thumbnailEmoji:'🫧', title:'제주 카페 인생샷 명소 3곳', views:'조회수 9만회' },
+    { type:'regular', id:'sr6', thumbnailImage:null, thumbnailGradient:'blue', thumbnailEmoji:'✈️', duration:'22:10', title:'제주 여행 2박 3일 완전 정복 (맛집+숙소+코스 총정리)', channel:'유정 · 조회수 87만 · 5일 전' }
+  ]
+};
+
+let config = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
+let currentVideoKey = 'v1';
+let currentCreatorLink = '';
+
+function loadConfig() {
+  try {
+    const saved = localStorage.getItem(CONFIG_KEY);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (!parsed.s2aChannels) parsed.s2aChannels = DEFAULT_CONFIG.s2aChannels;
+      if (!parsed.sourceVideosV2) parsed.sourceVideosV2 = JSON.parse(JSON.stringify(DEFAULT_CONFIG.sourceVideosV2));
+      config = parsed;
+    } else {
+      config = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
+    }
+  } catch(e) {
+    config = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
+  }
+}
+
+// ==================== NAVIGATION ====================
+let navStack = [];
+let currentScreen = 's1';
+
+function showScreen(id, animate) {
+  if (currentScreen === 's5') {
+    const vid = document.getElementById('main-video');
+    if (vid) vid.pause();
+  }
+  document.querySelectorAll('.screen').forEach(s => { s.classList.remove('active'); s.style.display = 'none'; });
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.style.display = 'flex';
+  el.classList.add('active');
+  if (animate) {
+    el.style.opacity = '0';
+    el.style.transform = 'translateX(30px)';
+    requestAnimationFrame(() => {
+      el.style.transition = 'opacity 0.18s ease, transform 0.18s ease';
+      el.style.opacity = '1';
+      el.style.transform = 'translateX(0)';
+      setTimeout(() => { el.style.transition = ''; }, 200);
+    });
+  }
+  const scrollArea = el.querySelector('.scroll-area');
+  if (scrollArea) scrollArea.scrollTop = 0;
+  currentScreen = id;
+  if (id === 's5') {
+    setTimeout(() => {
+      const vid = document.getElementById('main-video');
+      if (vid) vid.play().catch(() => {});
+    }, 300);
+  }
+}
+
+function goTo(screenId) {
+  navStack.push(currentScreen);
+  if (screenId === 's5' && currentScreen !== 's5') resetToVideo1();
+  showScreen(screenId, true);
+  if (screenId === 's-search') {
+    setTimeout(() => {
+      const inp = document.getElementById('s-search-input');
+      if (inp) { inp.value = ''; inp.focus(); }
+    }, 220);
+  }
+}
+
+function goBack() {
+  if (navStack.length === 0) return;
+  const prev = navStack.pop();
+  const el = document.getElementById(prev);
+  if (currentScreen === 's5') {
+    const vid = document.getElementById('main-video');
+    if (vid) vid.pause();
+    hideReSearchSheet();
+  }
+  document.querySelectorAll('.screen').forEach(s => { s.classList.remove('active'); s.style.display = 'none'; });
+  if (el) {
+    el.style.display = 'flex';
+    el.classList.add('active');
+    el.style.opacity = '0';
+    el.style.transform = 'translateX(-20px)';
+    requestAnimationFrame(() => {
+      el.style.transition = 'opacity 0.18s ease, transform 0.18s ease';
+      el.style.opacity = '1';
+      el.style.transform = 'translateX(0)';
+      setTimeout(() => { el.style.transition = ''; }, 200);
+    });
+  }
+  currentScreen = prev;
+}
+
+// ==================== SEARCH ====================
+function searchRegular(query) {
+  const trimmed = query.trim();
+  if (!trimmed) return;
+  const displayInput = document.getElementById('s2a-query-display');
+  if (displayInput) displayInput.textContent = trimmed;
+  const titleEl = document.getElementById('s2a-video-title');
+  if (titleEl) titleEl.textContent = trimmed;
+  const pillText = document.querySelector('#s2a-more-btn .s2a-pill-text');
+  if (pillText) pillText.textContent = trimmed + ' 관련 영상 요약';
+  const s5HeaderTitle = document.getElementById('s5-header-title');
+  if (s5HeaderTitle) s5HeaderTitle.textContent = trimmed;
+  goTo('s2a');
+}
+
+// ==================== RENDER FUNCTIONS ====================
+function renderAIThumbnail() {
+  const img = document.getElementById('ai-thumb-img');
+  if (!img) return;
+  img.src = config.aiThumbnail || 'assets/video-thumb.png';
+}
+
+function renderReSearchChips() {
+  const row = document.getElementById('re-search-chips-row');
+  if (!row) return;
+  const chips = (config.chips && config.chips.length) ? config.chips : DEFAULT_CONFIG.chips;
+  row.innerHTML = chips.map(c =>
+    `<button class="re-chip" onclick="appendReSearchText('${c.replace(/'/g,"\\'")}')">` + escapeHtml(c) + `</button>`
+  ).join('');
+}
+
+function appendReSearchText(text) {
+  const inp = document.getElementById('re-search-input');
+  if (!inp) return;
+  inp.value = inp.value ? inp.value + ' ' + text : text;
+  inp.focus();
+}
+
+function renderS2aChannels() {
+  const list = document.getElementById('s2a-channel-list');
+  if (!list) return;
+  const channels = (config.s2aChannels && config.s2aChannels.length) ? config.s2aChannels : DEFAULT_CONFIG.s2aChannels;
+  list.innerHTML = channels.map((ch, idx) => {
+    const isLast = idx === channels.length - 1;
+    const avatarHtml = ch.avatarImage
+      ? `<img src="${ch.avatarImage}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
+      : escapeHtml(ch.avatarText || '');
+    const avatarStyle = ch.avatarImage ? '' : `background:${ch.avatarColor || '#555'};`;
+    const subsClass = ch.subscribed ? 'subscribed' : '';
+    const subsText = ch.subscribed ? '구독중' : '구독';
+    return `<div class="channel-list-item${isLast ? ' channel-list-item--last' : ''}">
+      <div class="channel-list-avatar" style="${avatarStyle}">${avatarHtml}</div>
+      <div class="channel-list-info">
+        <div class="channel-list-name">${escapeHtml(ch.name||'')}</div>
+        <div class="channel-list-subs">${escapeHtml(ch.subs||'')}</div>
+      </div>
+      <button class="subscribe-btn ${subsClass}" onclick="toggleSubscribe(this)">${subsText}</button>
+    </div>`;
+  }).join('');
+}
+
+function renderS6() {
+  const list = document.getElementById('s6-source-list');
+  if (!list) return;
+  const arr = currentVideoKey === 'v2' ? (config.sourceVideosV2 || DEFAULT_CONFIG.sourceVideosV2) : (config.sourceVideos || DEFAULT_CONFIG.sourceVideos);
+  const items = arr.length ? arr : DEFAULT_CONFIG.sourceVideos;
+  const countEl = document.getElementById('s6-count');
+  if (countEl) countEl.textContent = items.length + '개';
+  list.innerHTML = items.map(v => {
+    const thumbHtml = v.thumbnailImage
+      ? `<img src="${v.thumbnailImage}">`
+      : `<div class="source-thumb-overlay"><span class="source-thumb-emoji">${escapeHtml(v.thumbnailEmoji||'')}</span><span class="source-thumb-label">${escapeHtml(v.thumbnailLabel||'')}</span></div>`;
+    const avatarHtml = v.channelAvatarImage
+      ? `<img src="${v.channelAvatarImage}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
+      : escapeHtml(v.channelAvatarText || '');
+    const avatarStyle = v.channelAvatarImage ? '' : `background:${v.channelAvatarColor || '#555'};`;
+    const subsClass = v.subscribed ? 'subscribed' : '';
+    const subsText = v.subscribed ? '구독중' : '구독';
+    const link = v.channelLink || '';
+    return `<div class="source-item">
+      <div class="source-thumb ${v.thumbnailGradient||''}" onclick="openSourceVideo('${escapeAttr(link)}')" style="position:relative;">
+        ${thumbHtml}
+        <div class="source-time-badge">${escapeHtml(v.duration||'')}</div>
+      </div>
+      <div class="source-info">
+        <div class="source-channel-row">
+          <div class="small-avatar" style="${avatarStyle}">${avatarHtml}</div>
+          <span class="channel-name" onclick="openChannel('${escapeAttr(v.channelName||'')}','${escapeAttr(link)}')">${escapeHtml(v.channelName||'')}</span>
+          <button class="subscribe-btn ${subsClass}" onclick="toggleSubscribe(this)">${subsText}</button>
+        </div>
+        <div class="source-title" onclick="openSourceVideo('${escapeAttr(link)}')">${escapeHtml(v.title||'')}</div>
+        <div class="source-details">${escapeHtml(v.details||'')}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderS2aFeed() {
+  const feed = document.getElementById('s2a-mixed-feed');
+  if (!feed) return;
+  const items = (config.searchResults && config.searchResults.length) ? config.searchResults : DEFAULT_CONFIG.searchResults;
+  let html = '';
+  let i = 0;
+  while (i < items.length) {
+    const item = items[i];
+    if (item.type === 'shorts') {
+      const next = items[i + 1];
+      if (next && next.type === 'shorts') {
+        html += `<div class="s2a-shorts-row">${renderShortCard(item)}${renderShortCard(next)}</div>`;
+        i += 2;
+      } else {
+        html += `<div class="s2a-shorts-row">${renderShortCard(item)}</div>`;
+        i += 1;
+      }
+    } else {
+      html += renderRegularCard(item);
+      i += 1;
+    }
+  }
+  feed.innerHTML = html;
+}
+
+function renderShortCard(item) {
+  const thumbContent = item.thumbnailImage
+    ? `<img src="${item.thumbnailImage}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">`
+    : '';
+  return `<div class="s2a-short-card" onclick="goTo('s5')">
+    <div class="s2a-short-thumb ${item.thumbnailGradient||''}">
+      ${thumbContent}
+      <div class="s2a-short-overlay">
+        <div class="s2a-short-text">
+          <p class="s2a-short-title">${escapeHtml(item.title||'')}</p>
+          <p class="s2a-short-views">${escapeHtml(item.views||'')}</p>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderRegularCard(item) {
+  const thumbContent = item.thumbnailImage
+    ? `<img src="${item.thumbnailImage}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">`
+    : `<div class="thumb-overlay"><span style="color:#fff;font-size:20px;">${escapeHtml(item.thumbnailEmoji||'')}</span></div>`;
+  return `<div class="regular-card" onclick="goTo('s5')">
+    <div class="regular-thumb ${item.thumbnailGradient||''}">
+      ${thumbContent}
+      <div class="regular-duration">${escapeHtml(item.duration||'')}</div>
+    </div>
+    <div class="regular-title">${escapeHtml(item.title||'')}</div>
+    <div class="regular-channel">${escapeHtml(item.channel||'')}</div>
+  </div>`;
+}
+
+// ==================== VIDEO ====================
+function resetToVideo1() {
+  currentVideoKey = 'v1';
+  const vid = document.getElementById('main-video');
+  const src = document.getElementById('main-video-src');
+  if (vid && src) {
+    vid.pause();
+    src.src = 'video20.mp4';
+    vid.load();
+    vid.currentTime = 0;
+  }
+  const fill = document.getElementById('timeline-fill');
+  const thumb = document.getElementById('timeline-thumb');
+  if (fill) fill.style.width = '0%';
+  if (thumb) thumb.style.left = '0%';
+  const ct = document.getElementById('current-time');
+  const tt = document.getElementById('total-time');
+  if (ct) ct.textContent = '0:00';
+  if (tt) tt.textContent = '0:20';
+  renderChapterMarkers();
+  updateCreatorCardDisplay(getCurrentCard(0));
+}
+
+function formatTime(sec) {
+  if (!isFinite(sec)) return '0:00';
+  const m = Math.floor(sec / 60);
+  const s = Math.floor(sec % 60);
+  return m + ':' + String(s).padStart(2, '0');
+}
+
+function getCurrentCard(time) {
+  const cards = (config.videos[currentVideoKey] || {}).creatorCards || [];
+  for (let i = cards.length - 1; i >= 0; i--) {
+    if (time >= cards[i].startTime && time <= cards[i].endTime) return cards[i];
+  }
+  return cards[0] || null;
+}
+
+function updateCreatorCardDisplay(card) {
+  if (!card) return;
+  const ccAvatar = document.getElementById('cc-avatar');
+  const ccName = document.getElementById('cc-name');
+  if (!ccAvatar || !ccName) return;
+  currentCreatorLink = card.link || '';
+  if (card.avatarImage) {
+    ccAvatar.style.background = 'transparent';
+    ccAvatar.innerHTML = `<img src="${card.avatarImage}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+  } else {
+    ccAvatar.style.background = card.avatarColor || '#555';
+    ccAvatar.innerHTML = escapeHtml(card.avatarText || '');
+  }
+  let nameHtml = escapeHtml(card.name || '');
+  if (card.subtitle) nameHtml += ` <span style="font-size:11px;font-weight:400;opacity:0.8;">${escapeHtml(card.subtitle)}</span>`;
+  ccName.innerHTML = nameHtml;
+}
+
+function navigateCreatorChannel(e) {
+  if (e.target.closest('button')) return;
+  e.stopPropagation();
+  if (currentCreatorLink) {
+    showToast('채널 홈으로 이동합니다');
+    setTimeout(() => window.open(currentCreatorLink, '_blank'), 700);
+  }
+}
+
+function renderChapterMarkers() {
+  const bar = document.getElementById('timeline-bar');
+  if (!bar) return;
+  bar.querySelectorAll('.chapter-marker').forEach(m => m.remove());
+  const vid = document.getElementById('main-video');
+  const duration = (vid && isFinite(vid.duration) && vid.duration > 0) ? vid.duration : 30;
+  const chapters = (config.videos[currentVideoKey] || {}).chapters || [];
+  chapters.forEach(ch => {
+    const pct = Math.max(0, Math.min(100, (ch.time / duration) * 100));
+    const marker = document.createElement('div');
+    marker.className = 'chapter-marker';
+    marker.style.left = pct + '%';
+    marker.title = ch.label || '';
+    bar.appendChild(marker);
+  });
+}
+
+function setupTimeline() {
+  const container = document.getElementById('timeline-container');
+  const bar = document.getElementById('timeline-bar');
+  const fill = document.getElementById('timeline-fill');
+  const thumb = document.getElementById('timeline-thumb');
+  const vid = document.getElementById('main-video');
+  if (!bar || !vid || !container) return;
+
+  let isDragging = false;
+  let isLongPress = false;
+  let longPressTimer = null;
+
+  function getDur() {
+    return (isFinite(vid.duration) && vid.duration > 0) ? vid.duration : 0;
+  }
+  function getPctFromX(clientX) {
+    const rect = bar.getBoundingClientRect();
+    return Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+  }
+  function setVisualPct(pct) {
+    const p = pct * 100;
+    fill.style.width = p + '%';
+    if (thumb) thumb.style.left = p + '%';
+    const ct = document.getElementById('current-time');
+    if (ct) ct.textContent = formatTime(pct * getDur());
+  }
+  function seekToPct(pct) {
+    const dur = getDur();
+    if (dur > 0) vid.currentTime = pct * dur;
+    setVisualPct(pct);
+  }
+  function showChapterPopup(pct) {
+    const time = pct * getDur();
+    const popup = document.getElementById('chapter-popup');
+    if (!popup) return;
+    const card = getCurrentCard(time);
+    const chapters = (config.videos[currentVideoKey] || {}).chapters || [];
+    const chapter = chapters.slice().reverse().find(c => time >= c.time);
+    const chapterLabel = chapter ? ` · ${escapeHtml(chapter.label||'')}` : '';
+    if (card) {
+      const avatarHtml = card.avatarImage
+        ? `<img src="${card.avatarImage}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
+        : escapeHtml(card.avatarText || '');
+      const avatarBg = card.avatarImage ? 'transparent' : (card.avatarColor || '#555');
+      popup.innerHTML = `<div style="display:flex;align-items:center;gap:8px;">
+        <div style="width:28px;height:28px;border-radius:50%;background:${avatarBg};display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0;overflow:hidden;">${avatarHtml}</div>
+        <div><div style="font-size:12px;font-weight:700;color:#fff;">${escapeHtml(card.name||'')}</div></div>
+        <span style="margin-left:auto;font-size:12px;color:rgba(255,255,255,0.8);">${formatTime(time)}${chapterLabel}</span>
+      </div>`;
+    } else {
+      popup.innerHTML = `<span style="font-size:12px;color:#fff;">${formatTime(time)}${chapterLabel}</span>`;
+    }
+    popup.classList.add('visible');
+  }
+  function hideChapterPopup() {
+    const popup = document.getElementById('chapter-popup');
+    if (popup) popup.classList.remove('visible');
+  }
+
+  // Mouse events
+  function onDocMouseMove(e) {
+    if (!isDragging) return;
+    const pct = getPctFromX(e.clientX);
+    setVisualPct(pct);
+    if (isLongPress) showChapterPopup(pct);
+  }
+  function onDocMouseUp(e) {
+    if (!isDragging) return;
+    clearTimeout(longPressTimer);
+    hideChapterPopup();
+    seekToPct(getPctFromX(e.clientX));
+    isDragging = false; isLongPress = false;
+    document.removeEventListener('mousemove', onDocMouseMove);
+    document.removeEventListener('mouseup', onDocMouseUp);
+  }
+  container.addEventListener('mousedown', (e) => {
+    e.preventDefault();
+    isDragging = true; isLongPress = false;
+    const pct = getPctFromX(e.clientX);
+    setVisualPct(pct);
+    longPressTimer = setTimeout(() => { isLongPress = true; showChapterPopup(getPctFromX(e.clientX)); }, 400);
+    document.addEventListener('mousemove', onDocMouseMove);
+    document.addEventListener('mouseup', onDocMouseUp);
+  });
+
+  // Touch events
+  container.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    isDragging = true; isLongPress = false;
+    const pct = getPctFromX(e.touches[0].clientX);
+    setVisualPct(pct);
+    longPressTimer = setTimeout(() => { isLongPress = true; showChapterPopup(getPctFromX(e.touches[0].clientX)); }, 400);
+  }, { passive: false });
+  container.addEventListener('touchmove', (e) => {
+    e.preventDefault();
+    clearTimeout(longPressTimer);
+    const pct = getPctFromX(e.touches[0].clientX);
+    setVisualPct(pct);
+    if (isLongPress) showChapterPopup(pct);
+  }, { passive: false });
+  container.addEventListener('touchend', (e) => {
+    clearTimeout(longPressTimer);
+    hideChapterPopup();
+    seekToPct(getPctFromX(e.changedTouches[0].clientX));
+    isDragging = false; isLongPress = false;
+  });
+
+  // Video events
+  vid.addEventListener('timeupdate', () => {
+    if (isDragging) return;
+    const dur = getDur();
+    if (dur <= 0) return;
+    const pct = vid.currentTime / dur;
+    fill.style.width = (pct * 100) + '%';
+    if (thumb) thumb.style.left = (pct * 100) + '%';
+    const ct = document.getElementById('current-time');
+    if (ct) ct.textContent = formatTime(vid.currentTime);
+    const card = getCurrentCard(vid.currentTime);
+    if (card) updateCreatorCardDisplay(card);
+  });
+  vid.addEventListener('loadedmetadata', () => {
+    const tt = document.getElementById('total-time');
+    if (tt) tt.textContent = formatTime(vid.duration);
+    renderChapterMarkers();
+  });
+  vid.addEventListener('ended', () => {
+    fill.style.width = '100%';
+    if (thumb) thumb.style.left = '100%';
+  });
+}
+
+function toggleVideoPlay() {
+  const vid = document.getElementById('main-video');
+  if (!vid) return;
+  const ind = document.getElementById('play-pause-indicator');
+  const icon = document.getElementById('play-pause-icon');
+  if (vid.paused) {
+    vid.play().catch(() => {});
+    if (icon) icon.textContent = '▶';
+  } else {
+    vid.pause();
+    if (icon) icon.textContent = '⏸';
+  }
+  if (ind) {
+    ind.style.opacity = '1';
+    setTimeout(() => { ind.style.opacity = '0'; }, 600);
+  }
+}
+
+// ==================== RE-SEARCH ====================
+function showReSearchSheet() {
+  const sheet = document.getElementById('re-search-sheet');
+  const overlay = document.getElementById('re-search-overlay');
+  if (!sheet) return;
+  renderReSearchChips();
+  sheet.classList.add('visible');
+  if (overlay) overlay.classList.add('open');
+  setTimeout(() => {
+    const inp = document.getElementById('re-search-input');
+    if (inp) inp.focus();
+  }, 350);
+}
+
+function hideReSearchSheet() {
+  const sheet = document.getElementById('re-search-sheet');
+  const overlay = document.getElementById('re-search-overlay');
+  if (sheet) sheet.classList.remove('visible');
+  if (overlay) overlay.classList.remove('open');
+  const inp = document.getElementById('re-search-input');
+  if (inp) { inp.blur(); inp.value = ''; }
+}
+
+function submitReSearch() {
+  hideReSearchSheet();
+  const vid = document.getElementById('main-video');
+  if (vid) vid.pause();
+  const overlay = document.getElementById('loading-overlay');
+  if (overlay) overlay.classList.add('visible');
+  setTimeout(() => {
+    if (overlay) overlay.classList.remove('visible');
+    switchToVideo2();
+  }, 2200);
+}
+
+function switchToVideo2() {
+  currentVideoKey = 'v2';
+  const vid = document.getElementById('main-video');
+  const src = document.getElementById('main-video-src');
+  if (vid && src) {
+    vid.pause();
+    src.src = 'video30.mp4';
+    vid.load();
+    vid.currentTime = 0;
+    vid.play().catch(() => {});
+  }
+  const fill = document.getElementById('timeline-fill');
+  const thumb = document.getElementById('timeline-thumb');
+  if (fill) fill.style.width = '0%';
+  if (thumb) thumb.style.left = '0%';
+  const ct = document.getElementById('current-time');
+  const tt = document.getElementById('total-time');
+  if (ct) ct.textContent = '0:00';
+  if (tt) tt.textContent = '0:30';
+  renderChapterMarkers();
+  const card = getCurrentCard(0);
+  if (card) updateCreatorCardDisplay(card);
+}
+
+// ==================== MISC ====================
+function toggleSubscribe(btn) {
+  if (btn.classList.contains('subscribed')) {
+    btn.classList.remove('subscribed');
+    btn.textContent = '구독';
+  } else {
+    btn.classList.add('subscribed');
+    btn.textContent = '구독중';
+    showToast('구독되었습니다');
+  }
+}
+
+function showToast(msg) {
+  document.querySelectorAll('.yt-toast').forEach(t => t.remove());
+  const toast = document.createElement('div');
+  toast.className = 'yt-toast';
+  toast.textContent = msg;
+  document.getElementById('phone-frame').appendChild(toast);
+  setTimeout(() => toast.remove(), 2400);
+}
+
+function openSourceVideo(link) {
+  if (!link) return;
+  showToast('원본 영상으로 이동합니다');
+  setTimeout(() => window.open(link, '_blank'), 700);
+}
+
+function openChannel(name, link) {
+  showToast((name || '채널') + ' 홈으로 이동합니다');
+  if (link) setTimeout(() => window.open(link, '_blank'), 700);
+}
+
+function toggleMoreSection(btn) {
+  const section = document.getElementById('s2a-more-section');
+  if (!section) return;
+  if (section.classList.contains('open')) {
+    section.classList.remove('open');
+    btn.classList.remove('open');
+  } else {
+    section.classList.add('open');
+    btn.classList.add('open');
+  }
+}
+
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function escapeAttr(str) {
+  if (!str) return '';
+  return String(str).replace(/'/g,'&#39;').replace(/"/g,'&quot;');
+}
+
+// ==================== INIT ====================
+loadConfig();
+renderAIThumbnail();
+renderReSearchChips();
+renderS2aChannels();
+renderS6();
+renderS2aFeed();
+setupTimeline();
+showScreen('s1', false);
+</script>
 </body>
 </html>
