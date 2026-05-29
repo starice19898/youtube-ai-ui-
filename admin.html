@@ -272,14 +272,50 @@ async function loadConfig() {
   }
 }
 
-function saveAll() {
+async function saveAll() {
   collectAllForms();
-  const blob = new Blob([JSON.stringify(config, null, 2)], { type: 'application/json' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'data.json';
-  a.click();
-  showSaveToast();
+  let token = localStorage.getItem('githubDeployToken');
+  if (!token) {
+    token = prompt('GitHub Personal Access Token을 입력하세요:\n(한 번만 입력하면 저장됩니다)');
+    if (!token) return;
+    localStorage.setItem('githubDeployToken', token);
+  }
+
+  const owner = 'starice19898';
+  const repo = 'youtube-ai-ui-';
+  const path = 'data.json';
+  const content = btoa(unescape(encodeURIComponent(JSON.stringify(config, null, 2))));
+
+  try {
+    const getRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, {
+      headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' }
+    });
+    let sha = null;
+    if (getRes.ok) sha = (await getRes.json()).sha;
+
+    const body = { message: '관리자 도구에서 데이터 업데이트', content };
+    if (sha) body.sha = sha;
+
+    const putRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, {
+      method: 'PUT',
+      headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json', 'Accept': 'application/vnd.github.v3+json' },
+      body: JSON.stringify(body)
+    });
+
+    if (putRes.ok) {
+      showSaveToast();
+    } else {
+      const err = await putRes.json();
+      if (putRes.status === 401) {
+        localStorage.removeItem('githubDeployToken');
+        alert('토큰이 유효하지 않습니다. 다시 시도해주세요.');
+      } else {
+        alert('배포 실패: ' + (err.message || putRes.status));
+      }
+    }
+  } catch(e) {
+    alert('네트워크 오류: ' + e.message);
+  }
 }
 
 function showSaveToast() {
