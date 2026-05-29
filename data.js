@@ -494,7 +494,7 @@ window.YT_AI_DATA = {
       "channelName": "TWS",
       "channelLink": "https://www.youtube.com/watch?v=4n7hb8X2NP0&t=3s",
       "title": "TWS TOURS in JEJU | EP.2",
-      "details": "",
+      "details": "#TWS / #제주도여행 / #카트레이싱",
       "subscribed": false
     },
     {
@@ -510,7 +510,7 @@ window.YT_AI_DATA = {
       "channelName": "예리미즈 yerimiese",
       "channelLink": "https://www.youtube.com/watch?v=LBLbxb2ldnM",
       "title": "부산 여행 브이로그",
-      "details": "",
+      "details": "#제주여행 / #겟레디윗미 / #나이트루틴",
       "subscribed": false
     },
     {
@@ -526,7 +526,7 @@ window.YT_AI_DATA = {
       "channelName": "ATEEZ",
       "channelLink": "https://www.youtube.com/watch?v=E2_WjfGDNdg",
       "title": " [Guerrilla Log] 제주에 놀러왔수다🍊 | 제주 여행 브이로그 | ATEEZ(에이티즈) #성화",
-      "details": "",
+      "details": "#제주여행 / #성화 / #모자여행",
       "subscribed": false
     },
     {
@@ -542,7 +542,7 @@ window.YT_AI_DATA = {
       "channelName": "ZEROBASEONE",
       "channelLink": "https://www.youtube.com/watch?v=Ou-PD-RJtfo",
       "title": "[ZB1 DAY] 한빈 VLOG | 첫 날부터 쉽지 않은 제주도 여행 | 날씨 요정이었는데 | 360도 돌아가는 그네",
-      "details": "",
+      "details": "#규빈이랑합체 / #데뷔1주년기념 / #용두암비바람",
       "subscribed": true
     },
     {
@@ -558,7 +558,7 @@ window.YT_AI_DATA = {
       "channelName": "문별이다 moonbyul2da",
       "channelLink": "https://www.youtube.com/watch?v=o2kUYoE5uTM",
       "title": " 제주 VLOG 찍은 문별이다｜윈드밀 108 풀빌라 펜션, 한림공원, 가족여행 in 제주도",
-      "details": "",
+      "details": "#제주도여행 / #VLOG / #힐링휴식",
       "subscribed": false
     },
     {
@@ -574,7 +574,7 @@ window.YT_AI_DATA = {
       "channelName": " 미루몽의 오타쿠 일기",
       "channelLink": "https://www.youtube.com/watch?v=HYYTRgQcgQA",
       "title": "제주도에 포켓몬 월드가?! 제주도 포켓몬 VLOG✈️ [파트1] #포켓몬스토어",
-      "details": "",
+      "details": "#제주여미지식물원 / #포켓몬이벤트 / #굿즈언박싱",
       "subscribed": false
     },
     {
@@ -590,7 +590,7 @@ window.YT_AI_DATA = {
       "channelName": "NCT",
       "channelLink": "https://www.youtube.com/watch?v=y3djSB0XLWU",
       "title": "🌊1박2일 부산여행(?) 코스📝 (휴게소/조개구이/밀락더마켓/청사포/해운대/굿밤콘서트) | 도영이의 청춘여행 in Busan",
-      "details": "",
+      "details": "#부산여행 / #도영 / #굿밤콘서트",
       "subscribed": false
     },
     {
@@ -606,7 +606,7 @@ window.YT_AI_DATA = {
       "channelName": "할명수",
       "channelLink": "https://www.youtube.com/watch?v=EMMoqLbB0XQ",
       "title": "(ENG) 부산은 뭐 하는 도시길래 아침 8시부터 피자 떡볶이 모찌빵을 먹냐고 | 🌊 부산 맛집 오픈런 | 할명수 ep.253",
-      "details": "",
+      "details": "#부산 / #오픈런 / #릴레이먹방",
       "subscribed": false
     },
     {
@@ -622,7 +622,7 @@ window.YT_AI_DATA = {
       "channelName": " 렌즈뚜껑 LENSCAP TRAVEL",
       "channelLink": "https://www.youtube.com/watch?v=nY9F-0iP_O8",
       "title": "가성비 끝판왕 부산여행 5곳 소개드립니다",
-      "details": "",
+      "details": "#부산여행 / #가성비코스 / #이색체험",
       "subscribed": false
     },
     {
@@ -638,7 +638,7 @@ window.YT_AI_DATA = {
       "channelName": " 마이 모멘또 my momento",
       "channelLink": "https://www.youtube.com/watch?v=p4RPi6EnDX0",
       "title": "(Vlog) 부산 브이로그 ✨/ 나만 알고 싶은 맛집, 카페 / Busan Vlog : My Favorite Cafes & Hidden Gems (ENG SUB)",
-      "details": "",
+      "details": " #부산여행 / #미식투어 / #카페탐방",
       "subscribed": false
     }
   ],
@@ -714,7 +714,7 @@ window.YT_AI_DATA = {
       "channelName": "TWS",
       "channelLink": "https://www.youtube.com/watch?v=4n7hb8X2NP0&t=3s",
       "title": "TWS TOURS in JEJU | EP.2",
-      "details": "",
+      "details": "#TWS / #제주도여행 / #카트레이싱",
       "subscribed": false
     },
     {
@@ -730,7 +730,7 @@ window.YT_AI_DATA = {
       "channelName": "예리미즈 yerimiese",
       "channelLink": "https://www.youtube.com/watch?v=LBLbxb2ldnM",
       "title": "부산 여행 브이로그",
-      "details": "",
+      "details": "#제주여행 / #겟레디윗미 / #나이트루틴",
       "subscribed": false
     },
     {
@@ -746,7 +746,7 @@ window.YT_AI_DATA = {
       "channelName": "ATEEZ",
       "channelLink": "https://www.youtube.com/watch?v=E2_WjfGDNdg",
       "title": "[Guerrilla Log] 제주에 놀러왔수다🍊 | 제주 여행 브이로그 | ATEEZ(에이티즈) #성화",
-      "details": "",
+      "details": "#제주여행 / #성화 / #모자여행",
       "subscribed": false
     },
     {
@@ -762,7 +762,7 @@ window.YT_AI_DATA = {
       "channelName": "ZEROBASEONE",
       "channelLink": "https://www.youtube.com/watch?v=Ou-PD-RJtfo",
       "title": "[ZB1 DAY] 한빈 VLOG | 첫 날부터 쉽지 않은 제주도 여행 | 날씨 요정이었는데 | 360도 돌아가는 그네",
-      "details": "",
+      "details": "#규빈이랑합체 / #데뷔1주년기념 / #용두암비바람",
       "subscribed": false
     },
     {
@@ -778,7 +778,7 @@ window.YT_AI_DATA = {
       "channelName": "문별이다 moonbyul2da",
       "channelLink": "https://www.youtube.com/watch?v=o2kUYoE5uTM",
       "title": "제주 VLOG 찍은 문별이다｜윈드밀 108 풀빌라 펜션, 한림공원, 가족여행 in 제주도",
-      "details": "",
+      "details": "#제주도여행 / #VLOG / #힐링휴식",
       "subscribed": false
     },
     {
@@ -794,7 +794,7 @@ window.YT_AI_DATA = {
       "channelName": "미루몽의 오타쿠 일기",
       "channelLink": "https://www.youtube.com/watch?v=HYYTRgQcgQA",
       "title": "제주도에 포켓몬 월드가?! 제주도 포켓몬 VLOG✈️ [파트1] #포켓몬스토어",
-      "details": "",
+      "details": "#제주여미지식물원 / #포켓몬이벤트 / #굿즈언박싱",
       "subscribed": false
     },
     {
@@ -810,7 +810,7 @@ window.YT_AI_DATA = {
       "channelName": "NCT",
       "channelLink": "https://www.youtube.com/watch?v=y3djSB0XLWU",
       "title": "🌊1박2일 부산여행(?) 코스📝 (휴게소/조개구이/밀락더마켓/청사포/해운대/굿밤콘서트) | 도영이의 청춘여행 in Busan",
-      "details": "",
+      "details": "#부산여행 / #도영 / #굿밤콘서트",
       "subscribed": false
     },
     {
@@ -826,7 +826,7 @@ window.YT_AI_DATA = {
       "channelName": "렌즈뚜껑 LENSCAP TRAVEL",
       "channelLink": "https://www.youtube.com/watch?v=nY9F-0iP_O8",
       "title": "가성비 끝판왕 부산여행 5곳 소개드립니다",
-      "details": "",
+      "details": "#부산여행 / #가성비코스 / #이색체험",
       "subscribed": false
     }
   ]
